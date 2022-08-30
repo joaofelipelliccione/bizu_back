@@ -9,6 +9,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthService } from '../auth/auth.service';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { LocalAuthGuard } from '../auth/local-auth.guard';
 // import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -24,14 +25,15 @@ export class UsersController {
     return this.usersService.create(newUser);
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
-
   @UseGuards(LocalAuthGuard) // O endpoint abaixo só será acessado quando receber uma requisição de login válida.
   @Post('/login')
   async login(@Request() req) {
     return this.authService.login(req.user);
+  }
+
+  @UseGuards(JwtAuthGuard) // O endpoint abaixo só será acessado quando receber um token válido.
+  @Get()
+  findAll() {
+    return this.usersService.findAll();
   }
 }
