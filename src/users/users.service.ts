@@ -2,9 +2,8 @@ import { Injectable, Inject } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { validate } from 'class-validator';
 import { User } from './entities/user.entity';
-import { CreateUserDto } from './dto/user.dto';
+import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { GenericResponseDto } from '../dto/response.dto';
-// import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -20,6 +19,10 @@ export class UsersService {
 
   async findByUserMail(userMail: string): Promise<User | null> {
     return this.userRepository.findOneBy({ userMail: userMail });
+  }
+
+  async findByUserId(userId: string): Promise<User | null> {
+    return this.userRepository.findOneBy({ userId: userId });
   }
 
   async create(data: CreateUserDto): Promise<GenericResponseDto> {
@@ -58,6 +61,28 @@ export class UsersService {
         return {
           statusCode: 500,
           message: `Erro ao registrar usuário: ${error}`,
+        };
+      });
+  }
+
+  async update(
+    id: string,
+    data: Partial<UpdateUserDto>,
+  ): Promise<GenericResponseDto> {
+    data['userPassword'] = bcrypt.hashSync(data.userPassword, 8);
+
+    return await this.userRepository
+      .update(id, data)
+      .then(() => {
+        return {
+          statusCode: 200,
+          message: 'Usuário atualizado com sucesso!!',
+        };
+      })
+      .catch((error) => {
+        return {
+          statusCode: 500,
+          message: `Erro ao atualizar usuário: ${error}`,
         };
       });
   }
