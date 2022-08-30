@@ -24,9 +24,7 @@ export class UsersService {
 
   async create(data: CreateUserDto): Promise<ResponseDto> {
     const newUser = new User();
-    newUser.isActive = true;
     newUser.username = data.username;
-    newUser.userCPF = data.userCpf;
     newUser.userMail = data.userMail;
     newUser.userPassword = bcrypt.hashSync(data.userPassword, 8); // Senha criptografada
 
