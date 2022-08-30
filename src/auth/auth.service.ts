@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserDto } from '../users/dto/user.dto';
+import { TokenResponseDto } from '../dto/response.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -24,7 +25,7 @@ export class AuthService {
     return null;
   }
 
-  async login(user: UserDto) {
+  async login(user: UserDto): Promise<TokenResponseDto> {
     const payload = {
       sub: user.userId,
       userMail: user.userMail,
