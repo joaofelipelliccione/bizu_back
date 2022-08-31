@@ -103,8 +103,12 @@ export class UsersService {
       });
   }
 
-  async findUserByToken(token: string): Promise<User | null> {
+  async findUserByToken(token: string): Promise<Partial<User> | null> {
     const { sub } = this.jwtService.decode(token);
-    return this.userRepository.findOneBy({ userId: sub });
+    const { userId, username, userMail } = await this.userRepository.findOneBy({
+      userId: sub,
+    });
+
+    return { userId, username, userMail };
   }
 }
