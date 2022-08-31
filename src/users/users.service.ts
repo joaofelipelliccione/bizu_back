@@ -29,7 +29,7 @@ export class UsersService {
     const newUser = new User();
     newUser.username = data.username;
     newUser.userMail = data.userMail;
-    newUser.userPassword = bcrypt.hashSync(data.userPassword, 8); // Senha criptografada
+    newUser.userPassword = data.userPassword;
 
     const existentUser = await this.findByUserMail(data.userMail);
     if (existentUser !== null) {
@@ -49,6 +49,7 @@ export class UsersService {
       };
     }
 
+    newUser.userPassword = bcrypt.hashSync(data.userPassword, 8); // Senha criptografada
     return this.userRepository
       .save(newUser)
       .then(() => {
@@ -69,10 +70,29 @@ export class UsersService {
     id: string,
     data: Partial<UpdateUserDto>,
   ): Promise<GenericResponseDto> {
-    data['userPassword'] = bcrypt.hashSync(data.userPassword, 8);
+    const userToUpdate = new UpdateUserDto();
+    userToUpdate.username = data.username;
+    userToUpdate.userPassword = data.userPassword;
+
+    const validationErrors = await validate(userToUpdate, {
+      skipMissingProperties: true,
+    });
+    if (validationErrors.length > 0) {
+      return {
+        statusCode: 400,
+        message: `Erro de validação: ${
+          Object.values(validationErrors[0].constraints)[0]
+        }`,
+      };
+    }
+
+    // Caso o usuário queira atualizar sua senha
+    if (data.userPassword) {
+      userToUpdate.userPassword = bcrypt.hashSync(data.userPassword, 8); // Senha criptografada
+    }
 
     return await this.userRepository
-      .update(id, data)
+      .update(id, userToUpdate)
       .then(() => {
         return {
           statusCode: 200,
