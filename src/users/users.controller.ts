@@ -27,9 +27,12 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard) // O endpoint abaixo só será acessado ao enviar um token válido.
-  @Patch(':id')
-  async update(@Param('id') id: string, @Body() data: Partial<UpdateUserDto>) {
-    return this.usersService.update(id, data);
+  @Patch(':token')
+  async update(
+    @Param('token') token: string,
+    @Body() data: Partial<UpdateUserDto>,
+  ) {
+    return this.usersService.update(token, data);
   }
 
   @UseGuards(LocalAuthGuard) // O endpoint abaixo só será acessado ao receber uma requisição de login válida.

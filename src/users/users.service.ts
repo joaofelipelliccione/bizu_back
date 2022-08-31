@@ -5,12 +5,14 @@ import { User } from './entities/user.entity';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { GenericResponseDto } from '../dto/response.dto';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UsersService {
   constructor(
     @Inject('USER_REPOSITORY') // Vêm do arquivo users.providers.ts
     private userRepository: Repository<User>,
+    private jwtService: JwtService,
   ) {}
 
   async findAll(): Promise<User[]> {
@@ -67,9 +69,11 @@ export class UsersService {
   }
 
   async update(
-    id: string,
+    token: string,
     data: Partial<UpdateUserDto>,
   ): Promise<GenericResponseDto> {
+    const { sub } = this.jwtService.decode(token); // sub é sinônimo de userId
+
     const userToUpdate = new UpdateUserDto();
     userToUpdate.username = data.username;
     userToUpdate.userPassword = data.userPassword;
@@ -92,7 +96,7 @@ export class UsersService {
     }
 
     return await this.userRepository
-      .update(id, userToUpdate)
+      .update(sub, userToUpdate)
       .then(() => {
         return {
           statusCode: 200,
