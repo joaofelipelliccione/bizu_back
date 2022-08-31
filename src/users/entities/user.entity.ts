@@ -1,4 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+} from 'typeorm';
 import { MinLength, IsEmail, Matches } from 'class-validator';
 
 @Entity()
@@ -22,4 +27,7 @@ export class User {
       'A senha deve possuir pelo menos 8 caracteres, um número e uma letra maiúscula.',
   })
   userPassword: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
 }
