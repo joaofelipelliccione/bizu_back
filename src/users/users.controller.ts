@@ -43,8 +43,9 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @Get('info')
+  async findOne(@Headers('Authorization') authorization: string) {
+    const token = authorization.replace('Bearer ', '');
+    return this.usersService.findUserByToken(token);
   }
 }

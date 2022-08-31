@@ -15,17 +15,9 @@ export class UsersService {
     private jwtService: JwtService,
   ) {}
 
-  async findAll(): Promise<User[]> {
-    return this.userRepository.find();
-  }
-
   async findByUserMail(userMail: string): Promise<User | null> {
     return this.userRepository.findOneBy({ userMail: userMail });
   }
-
-  // async findByUserId(userId: string): Promise<User | null> {
-  //   return this.userRepository.findOneBy({ userId: userId });
-  // }
 
   async create(data: CreateUserDto): Promise<GenericResponseDto> {
     const newUser = new User();
@@ -109,5 +101,10 @@ export class UsersService {
           message: `Erro ao atualizar usuário: ${error}`,
         };
       });
+  }
+
+  async findUserByToken(token: string): Promise<User | null> {
+    const { sub } = this.jwtService.decode(token);
+    return this.userRepository.findOneBy({ userId: sub });
   }
 }
