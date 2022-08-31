@@ -23,9 +23,9 @@ export class UsersService {
     return this.userRepository.findOneBy({ userMail: userMail });
   }
 
-  async findByUserId(userId: string): Promise<User | null> {
-    return this.userRepository.findOneBy({ userId: userId });
-  }
+  // async findByUserId(userId: string): Promise<User | null> {
+  //   return this.userRepository.findOneBy({ userId: userId });
+  // }
 
   async create(data: CreateUserDto): Promise<GenericResponseDto> {
     const newUser = new User();

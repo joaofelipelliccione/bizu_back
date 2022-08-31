@@ -5,7 +5,7 @@ import {
   Patch,
   Request,
   Body,
-  Param,
+  Headers,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -21,24 +21,25 @@ export class UsersController {
     private authService: AuthService,
   ) {}
 
-  @Post()
+  @Post('new')
   create(@Body() newUser: CreateUserDto) {
     return this.usersService.create(newUser);
-  }
-
-  @UseGuards(JwtAuthGuard) // O endpoint abaixo só será acessado ao enviar um token válido.
-  @Patch(':token')
-  async update(
-    @Param('token') token: string,
-    @Body() data: Partial<UpdateUserDto>,
-  ) {
-    return this.usersService.update(token, data);
   }
 
   @UseGuards(LocalAuthGuard) // O endpoint abaixo só será acessado ao receber uma requisição de login válida.
   @Post('/login')
   async login(@Request() req) {
     return this.authService.login(req.user);
+  }
+
+  @UseGuards(JwtAuthGuard) // O endpoint abaixo só será acessado ao enviar um token válido.
+  @Patch('update')
+  async update(
+    @Headers('Authorization') authorization: string,
+    @Body() data: Partial<UpdateUserDto>,
+  ) {
+    const token = authorization.replace('Bearer ', '');
+    return this.usersService.update(token, data);
   }
 
   @UseGuards(JwtAuthGuard)
