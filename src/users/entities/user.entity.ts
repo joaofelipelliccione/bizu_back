@@ -29,7 +29,7 @@ export class User {
   userPassword: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  signUp: Date;
 
   @Column()
   lastSignIn: Date;

@@ -6,12 +6,11 @@ import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { GenericResponseDto } from '../dto/response.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { timeStamp } from 'console';
 
 @Injectable()
 export class UsersService {
   constructor(
-    @Inject('USER_REPOSITORY') // Vêm do arquivo users.providers.ts
+    @Inject('USER_REPOSITORY') // Vêm do arquivo users.providers.ts. É similar ao UserModel
     private userRepository: Repository<User>,
     private jwtService: JwtService,
   ) {}
@@ -62,7 +61,7 @@ export class UsersService {
   }
 
   async updateLastSignIn(token: string): Promise<any> {
-    const { sub } = this.jwtService.decode(token);
+    const { sub } = this.jwtService.decode(token); // sub é sinônimo de userId
     await this.userRepository.update(sub, { lastSignIn: () => 'NOW()' }); // Atualizará para data e hora do Login
   }
 
@@ -70,7 +69,7 @@ export class UsersService {
     token: string,
     data: Partial<UpdateUserDto>,
   ): Promise<GenericResponseDto> {
-    const { sub } = this.jwtService.decode(token); // sub é sinônimo de userId
+    const { sub } = this.jwtService.decode(token);
 
     const userToUpdate = new UpdateUserDto();
     userToUpdate.username = data.username;
@@ -88,7 +87,7 @@ export class UsersService {
       };
     }
 
-    // Caso o usuário queira atualizar sua senha
+    // Caso o usuário queira atualizar sua respectiva senha
     if (data.userPassword) {
       userToUpdate.userPassword = bcrypt.hashSync(data.userPassword, 8); // Senha criptografada
     }
