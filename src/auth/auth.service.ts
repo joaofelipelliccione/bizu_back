@@ -25,6 +25,7 @@ export class AuthService {
     return null;
   }
 
+  // LOGIN DO USUÁRIO. Utilizado dentro do login() de users.controller.ts:
   async login(user: UserDto): Promise<TokenResponseDto> {
     const payload = {
       sub: user.userId,

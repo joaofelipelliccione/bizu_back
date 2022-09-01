@@ -10,15 +10,17 @@ import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class UsersService {
   constructor(
-    @Inject('USER_REPOSITORY') // Vêm do arquivo users.providers.ts. É similar ao UserModel
+    @Inject('USER_REPOSITORY')
     private userRepository: Repository<User>,
     private jwtService: JwtService,
   ) {}
 
+  // BUSCAR USUÁRIO POR userMail. Utilizado dentro do service create():
   async findByUserMail(userMail: string): Promise<User | null> {
     return this.userRepository.findOneBy({ userMail: userMail });
   }
 
+  // CADASTRAR USUÁRIO:
   async create(data: CreateUserDto): Promise<GenericResponseDto> {
     const newUser = new User();
     newUser.username = data.username;
@@ -60,16 +62,28 @@ export class UsersService {
       });
   }
 
+  // ATUALIZAR COLUNA lastSignIn. Utilizado dentro do controller login():
   async updateLastSignIn(token: string): Promise<any> {
     const { sub } = this.jwtService.decode(token); // sub é sinônimo de userId
     await this.userRepository.update(sub, { lastSignIn: () => 'NOW()' }); // Atualizará para data e hora do Login
   }
 
+  // ATUALIZAR USUÁRIO:
   async update(
     token: string,
     data: Partial<UpdateUserDto>,
   ): Promise<GenericResponseDto> {
     const { sub } = this.jwtService.decode(token);
+    const existentUser = await this.userRepository.findOneBy({
+      userId: sub,
+    });
+
+    if (existentUser === null) {
+      return {
+        statusCode: 404,
+        message: `Usuário não encontrado :(`,
+      };
+    }
 
     const userToUpdate = new UpdateUserDto();
     userToUpdate.username = data.username;
@@ -87,9 +101,9 @@ export class UsersService {
       };
     }
 
-    // Caso o usuário queira atualizar sua respectiva senha
+    // Caso haja atualização de senha:
     if (data.userPassword) {
-      userToUpdate.userPassword = bcrypt.hashSync(data.userPassword, 8); // Senha criptografada
+      userToUpdate.userPassword = bcrypt.hashSync(data.userPassword, 8); // Senha criptografada.
     }
 
     return await this.userRepository
@@ -108,12 +122,54 @@ export class UsersService {
       });
   }
 
-  async findUserByToken(token: string): Promise<Partial<User> | null> {
+  // BUSCAR USUÁRIO POR TOKEN --> userId:
+  async findUserByToken(
+    token: string,
+  ): Promise<Partial<User> | GenericResponseDto> {
     const { sub } = this.jwtService.decode(token);
-    const { userId, username, userMail } = await this.userRepository.findOneBy({
+
+    try {
+      const { userId, username, userMail } =
+        await this.userRepository.findOneBy({
+          userId: sub,
+        });
+
+      return { userId, username, userMail };
+    } catch (error) {
+      return {
+        statusCode: 404,
+        message: `Usuário não encontrado :(`,
+      };
+    }
+  }
+
+  // DELETAR USUÁRIO:
+  async destroy(token: string): Promise<GenericResponseDto> {
+    const { sub } = this.jwtService.decode(token);
+    const existentUser = await this.userRepository.findOneBy({
       userId: sub,
     });
 
-    return { userId, username, userMail };
+    if (existentUser === null) {
+      return {
+        statusCode: 404,
+        message: `Usuário não encontrado :(`,
+      };
+    }
+
+    return this.userRepository
+      .delete({ userId: sub })
+      .then(() => {
+        return {
+          statusCode: 200,
+          message: 'Usuário removido com sucesso.',
+        };
+      })
+      .catch((error) => {
+        return {
+          statusCode: 500,
+          message: `Erro ao remover usuário: ${error}`,
+        };
+      });
   }
 }
