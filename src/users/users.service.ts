@@ -61,6 +61,11 @@ export class UsersService {
       });
   }
 
+  async updateLastSignIn(token: string): Promise<any> {
+    const { sub } = this.jwtService.decode(token);
+    await this.userRepository.update(sub, { lastSignIn: () => 'NOW()' }); // Atualizará para data e hora do Login
+  }
+
   async update(
     token: string,
     data: Partial<UpdateUserDto>,
@@ -102,11 +107,6 @@ export class UsersService {
           message: `Erro ao atualizar usuário: ${error}`,
         };
       });
-  }
-
-  async updateLastSignIn(token: string): Promise<any> {
-    const { sub } = this.jwtService.decode(token);
-    await this.userRepository.update(sub, { lastSignIn: () => 'NOW()' });
   }
 
   async findUserByToken(token: string): Promise<Partial<User> | null> {

@@ -30,8 +30,8 @@ export class UsersController {
   @Post('login')
   async login(@Request() req) {
     const { accessToken } = await this.authService.login(req.user);
-    this.usersService.updateLastSignIn(accessToken);
 
+    this.usersService.updateLastSignIn(accessToken); // Atualiza a coluna lastSignIn
     return this.authService.login(req.user);
   }
 
