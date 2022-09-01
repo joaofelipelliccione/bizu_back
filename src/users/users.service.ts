@@ -6,6 +6,7 @@ import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { GenericResponseDto } from '../dto/response.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { timeStamp } from 'console';
 
 @Injectable()
 export class UsersService {
@@ -101,6 +102,11 @@ export class UsersService {
           message: `Erro ao atualizar usuário: ${error}`,
         };
       });
+  }
+
+  async updateLastSignIn(token: string): Promise<any> {
+    const { sub } = this.jwtService.decode(token);
+    await this.userRepository.update(sub, { lastSignIn: () => 'NOW()' });
   }
 
   async findUserByToken(token: string): Promise<Partial<User> | null> {

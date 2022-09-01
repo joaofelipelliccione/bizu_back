@@ -29,6 +29,9 @@ export class UsersController {
   @UseGuards(LocalAuthGuard) // O endpoint abaixo só será acessado ao receber uma requisição de login válida.
   @Post('login')
   async login(@Request() req) {
+    const { accessToken } = await this.authService.login(req.user);
+    this.usersService.updateLastSignIn(accessToken);
+
     return this.authService.login(req.user);
   }
 
