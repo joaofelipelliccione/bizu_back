@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { validate } from 'class-validator';
 import { User } from './entities/user.entity';
+import { validate } from 'class-validator';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { GenericResponseDto } from '../dto/response.dto';
 import * as bcrypt from 'bcrypt';
