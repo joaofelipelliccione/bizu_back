@@ -8,8 +8,8 @@ export class CountriesController {
 
   // CADASTRAR PAÍS:
   @Post('new')
-  create(@Body() newUser: CreateCountryDto) {
-    return this.countriesService.create(newUser);
+  create(@Body() newCountry: CreateCountryDto) {
+    return this.countriesService.create(newCountry);
   }
 
   // BUSCAR TODOS OS PAÍSES:

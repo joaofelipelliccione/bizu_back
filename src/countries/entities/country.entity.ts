@@ -13,9 +13,9 @@ export class Country {
   countryName: string;
 
   @Column()
-  @MinLength(1, {
+  @MinLength(8, {
     message:
-      'O link da imagem da bandeira do país deve possuir, no mínimo, 1 carácter.',
+      'O link da imagem da bandeira do país deve apresentar, no mínimo, 8 caracteres.',
   })
   countryFlag: string;
 }
