@@ -15,6 +15,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: any) {
     // A definição do payload é feita no arquivo auth.service.ts
-    return { id: payload.sub, username: payload.username };
+    return { id: payload.sub, username: payload.username, role: payload.role };
   }
 }

@@ -1,4 +1,5 @@
 import { MinLength, Matches } from 'class-validator';
+import { Role } from '../enum/role.enum';
 
 export class CreateUserDto {
   username: string;
@@ -21,4 +22,5 @@ export class UpdateUserDto {
 
 export class UserDto extends CreateUserDto {
   id: string;
+  role: Role;
 }

@@ -129,11 +129,13 @@ export class UsersService {
     const { sub } = this.jwtService.decode(token);
 
     try {
-      const { id, username, email } = await this.userRepository.findOneBy({
-        id: sub,
-      });
+      const { id, username, email, role } = await this.userRepository.findOneBy(
+        {
+          id: sub,
+        },
+      );
 
-      return { id, username, email };
+      return { id, username, email, role };
     } catch (error) {
       return {
         statusCode: 404,
