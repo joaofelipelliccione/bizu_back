@@ -16,7 +16,7 @@ export class App {
 
   @Column({ length: 7 })
   @IsEnum(PlatformTypesEnum, {
-    message: 'Plataformas aceitas: Android | IOS | Android e IOS | Web.',
+    message: 'Plataformas aceitas: Android | IOS | Both | Web.',
   })
   platform: string;
 

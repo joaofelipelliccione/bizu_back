@@ -20,7 +20,7 @@ export class CountriesController {
 
   // DELETAR PAÍS:
   @Delete('remove/:id')
-  async deleteUser(@Param('id') id: number) {
+  async deleteCountry(@Param('id') id: number) {
     return this.countriesService.destroy(id);
   }
 }

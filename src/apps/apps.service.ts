@@ -32,6 +32,14 @@ export class AppsService {
       };
     }
 
+    const existentApp = await this.findByAppName(data.name);
+    if (existentApp !== null) {
+      return {
+        statusCode: 409,
+        message: `Aplicativo já registrado.`,
+      };
+    }
+
     const newApp = new App();
     newApp.platform = data.platform;
     newApp.name = data.name;
@@ -40,14 +48,6 @@ export class AppsService {
     newApp.websiteLink = data.websiteLink;
     newApp.category = data.category;
     newApp.country = existentCountry;
-
-    const existentApp = await this.findByAppName(data.name);
-    if (existentApp !== null) {
-      return {
-        statusCode: 409,
-        message: `Aplicativo já registrado.`,
-      };
-    }
 
     const validationErrors = await validate(newApp);
     if (validationErrors.length > 0) {
@@ -76,33 +76,33 @@ export class AppsService {
   }
 
   // DELETAR APP:
-  // async destroy(countryId: number): Promise<GenericResponseDto> {
-  //   const existentCountry = await this.appRepository.findOneBy({
-  //     countryId,
-  //   });
+  async destroy(appId: number): Promise<GenericResponseDto> {
+    const existentApp = await this.appRepository.findOneBy({
+      id: appId,
+    });
 
-  //   if (existentCountry === null) {
-  //     return {
-  //       statusCode: 404,
-  //       message: `País não encontrado :(`,
-  //     };
-  //   }
+    if (existentApp === null) {
+      return {
+        statusCode: 404,
+        message: `Aplicativo não encontrado :(`,
+      };
+    }
 
-  //   return this.appRepository
-  //     .delete({ countryId })
-  //     .then(() => {
-  //       return {
-  //         statusCode: 200,
-  //         message: 'País removido com sucesso.',
-  //       };
-  //     })
-  //     .catch((error) => {
-  //       return {
-  //         statusCode: 500,
-  //         message: `Erro ao remover País: ${error}`,
-  //       };
-  //     });
-  // }
+    return this.appRepository
+      .delete({ id: appId })
+      .then(() => {
+        return {
+          statusCode: 200,
+          message: 'Aplicativo removido com sucesso.',
+        };
+      })
+      .catch((error) => {
+        return {
+          statusCode: 500,
+          message: `Erro ao remover aplicativo: ${error}`,
+        };
+      });
+  }
 
   // BUSCAR TODOS OS APPS:
   async find(): Promise<App[]> {

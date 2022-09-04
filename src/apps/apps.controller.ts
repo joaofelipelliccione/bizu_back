@@ -19,8 +19,8 @@ export class AppsController {
   }
 
   // DELETAR APP:
-  // @Delete('remove/:id')
-  // async deleteUser(@Param('id') id: number) {
-  //   return this.appsService.destroy(id);
-  // }
+  @Delete('remove/:id')
+  async deleteApp(@Param('id') id: number) {
+    return this.appsService.destroy(id);
+  }
 }
