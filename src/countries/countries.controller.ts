@@ -33,6 +33,8 @@ export class CountriesController {
   }
 
   // DELETAR PAÍS:
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete('remove/:id')
   async deleteCountry(@Param('id') id: number) {
     return this.countriesService.destroy(id);
