@@ -3,9 +3,11 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
+  ManyToOne,
 } from 'typeorm';
-import { MinLength, Length, IsEnum } from 'class-validator';
+import { MinLength, IsEnum } from 'class-validator';
 import { PlatformTypesEnum } from '../enum/platformTypesEnum';
+import { Country } from '../../countries/entities/country.entity';
 
 @Entity()
 export class App {
@@ -48,16 +50,13 @@ export class App {
   })
   appCategory: string;
 
-  @Column() // FK Tabela Countries
-  @Length(1, 1, {
-    message:
-      'O país de origem do aplicativo deve ser informado através do countryId, da entidade Countries.',
-  })
-  appCountry: number;
-
   @CreateDateColumn()
   createdAt: Date;
 
   @Column()
   lastUpdate: Date;
+
+  // RELAÇÕES:
+  @ManyToOne(() => Country, (country) => country.apps, { eager: true })
+  appCountry: Country;
 }

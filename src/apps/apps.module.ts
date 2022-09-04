@@ -3,10 +3,11 @@ import { DatabaseModule } from 'src/database/database.module';
 import { appsProviders } from './apps.providers';
 import { AppsService } from './apps.service';
 import { AppsController } from './apps.controller';
+import { countriesProviders } from 'src/countries/countries.providers';
 
 @Module({
   imports: [DatabaseModule],
-  providers: [...appsProviders, AppsService],
+  providers: [...appsProviders, ...countriesProviders, AppsService],
   controllers: [AppsController],
   exports: [AppsService],
 })

@@ -13,10 +13,10 @@ export class AppsController {
   }
 
   // BUSCAR TODOS OS APPS:
-  // @Get()
-  // findAll() {
-  //   return this.appsService.find();
-  // }
+  @Get()
+  findAll() {
+    return this.appsService.find();
+  }
 
   // DELETAR APP:
   // @Delete('remove/:id')
