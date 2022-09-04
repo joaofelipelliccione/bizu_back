@@ -1,9 +1,9 @@
-import { PlatformTypesEnum } from '../enum/platformTypes.enum';
+import { Platform } from '../enum/platform.enum';
 import { MinLength, IsEnum } from 'class-validator';
 import { Country } from '../../countries/entities/country.entity';
 
 export class CreateAppDto {
-  platform: string;
+  platform: Platform;
   name: string;
   logo: string;
   slogan: string;
@@ -13,10 +13,10 @@ export class CreateAppDto {
 }
 
 export class UpdateAppDto {
-  @IsEnum(PlatformTypesEnum, {
-    message: 'Plataformas aceitas: Android | IOS | Both | Web.',
+  @IsEnum(Platform, {
+    message: 'Plataformas aceitas: Android | IOS | Android e IOS | Web.',
   })
-  platform: string;
+  platform: Platform;
 
   @MinLength(1, {
     message: 'O nome do aplicativo deve possuir, no mínimo, 1 caractere.',

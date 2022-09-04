@@ -6,7 +6,7 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { MinLength, IsEnum } from 'class-validator';
-import { PlatformTypesEnum } from '../enum/platformTypes.enum';
+import { Platform } from '../enum/platform.enum';
 import { Country } from '../../countries/entities/country.entity';
 
 @Entity()
@@ -15,10 +15,10 @@ export class App {
   id: number;
 
   @Column({ length: 7 })
-  @IsEnum(PlatformTypesEnum, {
-    message: 'Plataformas aceitas: Android | IOS | Both | Web.',
+  @IsEnum(Platform, {
+    message: 'Plataformas aceitas: Mobile | Web.',
   })
-  platform: string;
+  platform: Platform;
 
   @Column({ length: 20 })
   @MinLength(1, {
