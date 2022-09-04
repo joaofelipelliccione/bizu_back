@@ -15,19 +15,19 @@ export class UsersService {
     private jwtService: JwtService,
   ) {}
 
-  // BUSCAR USUÁRIO POR userMail. Utilizado dentro do service create():
+  // BUSCAR USUÁRIO POR email. Utilizado dentro do service create():
   async findByUserMail(userMail: string): Promise<User | null> {
-    return this.userRepository.findOneBy({ userMail: userMail });
+    return this.userRepository.findOneBy({ email: userMail });
   }
 
   // CADASTRAR USUÁRIO:
   async create(data: CreateUserDto): Promise<GenericResponseDto> {
     const newUser = new User();
     newUser.username = data.username;
-    newUser.userMail = data.userMail;
-    newUser.userPassword = data.userPassword;
+    newUser.email = data.email;
+    newUser.password = data.password;
 
-    const existentUser = await this.findByUserMail(data.userMail);
+    const existentUser = await this.findByUserMail(data.email);
     if (existentUser !== null) {
       return {
         statusCode: 409,
@@ -45,7 +45,7 @@ export class UsersService {
       };
     }
 
-    newUser.userPassword = bcrypt.hashSync(data.userPassword, 8); // Senha criptografada
+    newUser.password = bcrypt.hashSync(data.password, 8); // Senha criptografada
     return this.userRepository
       .save(newUser)
       .then(() => {
@@ -64,7 +64,7 @@ export class UsersService {
 
   // ATUALIZAR COLUNA lastSignIn. Utilizado dentro do controller login():
   async updateLastSignIn(token: string): Promise<any> {
-    const { sub } = this.jwtService.decode(token); // sub é sinônimo de userId
+    const { sub } = this.jwtService.decode(token); // sub é sinônimo de id do usuário
     await this.userRepository.update(sub, { lastSignIn: () => 'NOW()' }); // Atualizará para data e hora do Login
   }
 
@@ -75,7 +75,7 @@ export class UsersService {
   ): Promise<GenericResponseDto> {
     const { sub } = this.jwtService.decode(token);
     const existentUser = await this.userRepository.findOneBy({
-      userId: sub,
+      id: sub,
     });
 
     if (existentUser === null) {
@@ -87,7 +87,7 @@ export class UsersService {
 
     const userToUpdate = new UpdateUserDto();
     userToUpdate.username = data.username;
-    userToUpdate.userPassword = data.userPassword;
+    userToUpdate.password = data.password;
 
     const validationErrors = await validate(userToUpdate, {
       skipMissingProperties: true,
@@ -102,8 +102,8 @@ export class UsersService {
     }
 
     // Caso haja atualização de senha:
-    if (data.userPassword) {
-      userToUpdate.userPassword = bcrypt.hashSync(data.userPassword, 8); // Senha criptografada.
+    if (data.password) {
+      userToUpdate.password = bcrypt.hashSync(data.password, 8); // Senha criptografada.
     }
 
     return await this.userRepository
@@ -122,19 +122,18 @@ export class UsersService {
       });
   }
 
-  // BUSCAR USUÁRIO POR TOKEN --> userId:
+  // BUSCAR USUÁRIO POR TOKEN --> id do usuário:
   async findUserByToken(
     token: string,
   ): Promise<Partial<User> | GenericResponseDto> {
     const { sub } = this.jwtService.decode(token);
 
     try {
-      const { userId, username, userMail } =
-        await this.userRepository.findOneBy({
-          userId: sub,
-        });
+      const { id, username, email } = await this.userRepository.findOneBy({
+        id: sub,
+      });
 
-      return { userId, username, userMail };
+      return { id, username, email };
     } catch (error) {
       return {
         statusCode: 404,
@@ -147,7 +146,7 @@ export class UsersService {
   async destroy(token: string): Promise<GenericResponseDto> {
     const { sub } = this.jwtService.decode(token);
     const existentUser = await this.userRepository.findOneBy({
-      userId: sub,
+      id: sub,
     });
 
     if (existentUser === null) {
@@ -158,7 +157,7 @@ export class UsersService {
     }
 
     return this.userRepository
-      .delete({ userId: sub })
+      .delete({ id: sub })
       .then(() => {
         return {
           statusCode: 200,

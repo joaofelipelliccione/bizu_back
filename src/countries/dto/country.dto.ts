@@ -1,8 +1,8 @@
 export class CreateCountryDto {
-  countryName: string;
-  countryFlag: string;
+  name: string;
+  flag: string;
 }
 
 export class CountryDto extends CreateCountryDto {
-  countryId: string;
+  id: string;
 }

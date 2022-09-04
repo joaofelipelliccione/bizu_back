@@ -2,8 +2,8 @@ import { MinLength, Matches } from 'class-validator';
 
 export class CreateUserDto {
   username: string;
-  userMail: string;
-  userPassword: string;
+  email: string;
+  password: string;
 }
 
 export class UpdateUserDto {
@@ -16,9 +16,9 @@ export class UpdateUserDto {
     message:
       'A senha deve possuir pelo menos 8 caracteres, um número e uma letra maiúscula.',
   })
-  userPassword: string;
+  password: string;
 }
 
 export class UserDto extends CreateUserDto {
-  userId: string;
+  id: string;
 }

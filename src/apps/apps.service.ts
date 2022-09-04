@@ -15,15 +15,15 @@ export class AppsService {
     private countryRepository: Repository<Country>,
   ) {}
 
-  // BUSCAR APP POR appName. Utilizado dentro do service create():
+  // BUSCAR APP POR name. Utilizado dentro do service create():
   async findByAppName(appName: string): Promise<App | null> {
-    return this.appRepository.findOneBy({ appName: appName });
+    return this.appRepository.findOneBy({ name: appName });
   }
 
   // CADASTRAR APP:
   async create(data: CreateAppDto): Promise<GenericResponseDto> {
     const existentCountry = await this.countryRepository.findOneBy({
-      countryId: data.appCountry,
+      id: data.country,
     });
     if (existentCountry === null) {
       return {
@@ -33,15 +33,15 @@ export class AppsService {
     }
 
     const newApp = new App();
-    newApp.appPlatform = data.appPlatform;
-    newApp.appName = data.appName;
-    newApp.appLogo = data.appLogo;
-    newApp.appSlogan = data.appSlogan;
-    newApp.appWebsiteLink = data.appWebsiteLink;
-    newApp.appCategory = data.appCategory;
-    newApp.appCountry = existentCountry;
+    newApp.platform = data.platform;
+    newApp.name = data.name;
+    newApp.logo = data.logo;
+    newApp.slogan = data.slogan;
+    newApp.websiteLink = data.websiteLink;
+    newApp.category = data.category;
+    newApp.country = existentCountry;
 
-    const existentApp = await this.findByAppName(data.appName);
+    const existentApp = await this.findByAppName(data.name);
     if (existentApp !== null) {
       return {
         statusCode: 409,

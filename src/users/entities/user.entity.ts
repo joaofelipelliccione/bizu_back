@@ -9,7 +9,7 @@ import { MinLength, IsEmail, Matches } from 'class-validator';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  userId: string;
+  id: string;
 
   @Column({ length: 100 })
   @MinLength(3, {
@@ -19,14 +19,14 @@ export class User {
 
   @Column({ length: 255 })
   @IsEmail()
-  userMail: string;
+  email: string;
 
   @Column({ length: 255 })
   @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
     message:
       'A senha deve possuir pelo menos 8 caracteres, um número e uma letra maiúscula.',
   })
-  userPassword: string;
+  password: string;
 
   @CreateDateColumn()
   signUp: Date;

@@ -12,18 +12,18 @@ export class CountriesService {
     private countryRepository: Repository<Country>,
   ) {}
 
-  // BUSCAR PAÍS POR countryName. Utilizado dentro do service create():
+  // BUSCAR PAÍS POR name. Utilizado dentro do service create():
   async findByCountryName(countryName: string): Promise<Country | null> {
-    return this.countryRepository.findOneBy({ countryName: countryName });
+    return this.countryRepository.findOneBy({ name: countryName });
   }
 
   // CADASTRAR PAÍS:
   async create(data: CreateCountryDto): Promise<GenericResponseDto> {
     const newCountry = new Country();
-    newCountry.countryName = data.countryName;
-    newCountry.countryFlag = data.countryFlag;
+    newCountry.name = data.name;
+    newCountry.flag = data.flag;
 
-    const existentCountry = await this.findByCountryName(data.countryName);
+    const existentCountry = await this.findByCountryName(data.name);
     if (existentCountry !== null) {
       return {
         statusCode: 409,
@@ -60,7 +60,7 @@ export class CountriesService {
   // DELETAR PAÍS:
   async destroy(countryId: number): Promise<GenericResponseDto> {
     const existentCountry = await this.countryRepository.findOneBy({
-      countryId,
+      id: countryId,
     });
 
     if (existentCountry === null) {
@@ -71,7 +71,7 @@ export class CountriesService {
     }
 
     return this.countryRepository
-      .delete({ countryId })
+      .delete({ id: countryId })
       .then(() => {
         return {
           statusCode: 200,

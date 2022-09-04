@@ -1,13 +1,13 @@
 export class CreateAppDto {
-  appPlatform: string;
-  appName: string;
-  appLogo: string;
-  appSlogan: string;
-  appWebsiteLink: string;
-  appCategory: string;
-  appCountry: number;
+  platform: string;
+  name: string;
+  logo: string;
+  slogan: string;
+  websiteLink: string;
+  category: string;
+  country: number;
 }
 
 export class AppDto extends CreateAppDto {
-  appId: number;
+  id: number;
 }

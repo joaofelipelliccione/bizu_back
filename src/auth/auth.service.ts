@@ -15,10 +15,7 @@ export class AuthService {
   async validateUser(email: string, password: string): Promise<UserDto | null> {
     const existentUser = await this.usersService.findByUserMail(email);
 
-    if (
-      existentUser &&
-      bcrypt.compareSync(password, existentUser.userPassword)
-    ) {
+    if (existentUser && bcrypt.compareSync(password, existentUser.password)) {
       const { ...result } = existentUser;
       return result;
     }
@@ -28,8 +25,8 @@ export class AuthService {
   // LOGIN DO USUÁRIO. Utilizado dentro do login() de users.controller.ts:
   async login(user: UserDto): Promise<TokenResponseDto> {
     const payload = {
-      sub: user.userId,
-      userMail: user.userMail,
+      sub: user.id,
+      email: user.email,
       username: user.username,
     };
 

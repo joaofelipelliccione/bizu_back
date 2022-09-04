@@ -49,7 +49,7 @@ export class UsersController {
     return this.usersService.update(token, data);
   }
 
-  // BUSCAR USUÁRIO POR TOKEN --> userId:
+  // BUSCAR USUÁRIO POR TOKEN --> id do usuário:
   @UseGuards(JwtAuthGuard)
   @Get('info')
   async findOne(@Headers('Authorization') authorization: string) {
