@@ -1,4 +1,4 @@
-import { PlatformTypesEnum } from '../enum/platformTypesEnum';
+import { PlatformTypesEnum } from '../enum/platformTypes.enum';
 import { MinLength, IsEnum } from 'class-validator';
 import { Country } from '../../countries/entities/country.entity';
 

@@ -6,7 +6,7 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { MinLength, IsEnum } from 'class-validator';
-import { PlatformTypesEnum } from '../enum/platformTypesEnum';
+import { PlatformTypesEnum } from '../enum/platformTypes.enum';
 import { Country } from '../../countries/entities/country.entity';
 
 @Entity()
