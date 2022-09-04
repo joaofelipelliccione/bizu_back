@@ -4,6 +4,7 @@ import { App } from './entities/app.entity';
 import { Country } from '../countries/entities/country.entity';
 import { validate } from 'class-validator';
 import { CreateAppDto } from './dto/app.dto';
+import { UpdateAppDto } from './dto/app.dto';
 import { GenericResponseDto } from '../dto/response.dto';
 
 @Injectable()
@@ -22,6 +23,14 @@ export class AppsService {
 
   // CADASTRAR APP:
   async create(data: CreateAppDto): Promise<GenericResponseDto> {
+    const existentApp = await this.findByAppName(data.name);
+    if (existentApp !== null) {
+      return {
+        statusCode: 409,
+        message: `Aplicativo já registrado.`,
+      };
+    }
+
     const existentCountry = await this.countryRepository.findOneBy({
       id: data.country,
     });
@@ -29,14 +38,6 @@ export class AppsService {
       return {
         statusCode: 400,
         message: `Antes de cadastrar o app, deve-se registrar seu respectivo país de origem.`,
-      };
-    }
-
-    const existentApp = await this.findByAppName(data.name);
-    if (existentApp !== null) {
-      return {
-        statusCode: 409,
-        message: `Aplicativo já registrado.`,
       };
     }
 
@@ -71,6 +72,58 @@ export class AppsService {
         return {
           statusCode: 500,
           message: `Erro ao registrar aplicativo: ${error}`,
+        };
+      });
+  }
+
+  // ATUALIZAR APP:
+  async update(
+    appId: number,
+    data: Partial<UpdateAppDto>,
+  ): Promise<GenericResponseDto> {
+    const existentApp = await this.appRepository.findOneBy({
+      id: appId,
+    });
+    if (existentApp === null) {
+      return {
+        statusCode: 404,
+        message: `Aplicativo não encontrado :(`,
+      };
+    }
+
+    const appToUpdate = new UpdateAppDto();
+    appToUpdate.platform = data.platform;
+    appToUpdate.name = data.name;
+    appToUpdate.logo = data.logo;
+    appToUpdate.slogan = data.slogan;
+    appToUpdate.websiteLink = data.websiteLink;
+    appToUpdate.category = data.category;
+    appToUpdate.country = data.country;
+
+    const validationErrors = await validate(appToUpdate, {
+      skipMissingProperties: true,
+    });
+    if (validationErrors.length > 0) {
+      return {
+        statusCode: 400,
+        message: `Erro de validação: ${
+          Object.values(validationErrors[0].constraints)[0]
+        }`,
+      };
+    }
+
+    return await this.appRepository
+      .update(appId, appToUpdate)
+      .then(() => {
+        return {
+          statusCode: 200,
+          message: 'Aplicativo atualizado com sucesso!!',
+        };
+      })
+      .catch((error) => {
+        return {
+          statusCode: 500,
+          message: `Erro ao atualizar aplicativo: ${error}`,
         };
       });
   }
