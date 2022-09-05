@@ -14,7 +14,7 @@ export class CreateAppDto {
 
 export class UpdateAppDto {
   @IsEnum(Platform, {
-    message: 'Plataformas aceitas: Android | IOS | Android e IOS | Web.',
+    message: 'Plataformas aceitas: Mobile | Web.',
   })
   platform: Platform;
 
