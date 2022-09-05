@@ -37,6 +37,7 @@ export class AppsController {
   }
 
   // BUSCAR TODOS OS APPS:
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll() {
     return this.appsService.find();
