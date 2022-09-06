@@ -49,3 +49,9 @@ export class UpdateAppDto {
 export class AppDto extends CreateAppDto {
   id: number;
 }
+
+export class AppQueryDto {
+  name: string;
+  category: string;
+  country: string;
+}

@@ -3,9 +3,9 @@ import { Repository } from 'typeorm';
 import { App } from './entities/app.entity';
 import { Country } from '../countries/entities/country.entity';
 import { validate } from 'class-validator';
-import { CreateAppDto } from './dto/app.dto';
-import { UpdateAppDto } from './dto/app.dto';
+import { CreateAppDto, UpdateAppDto, AppQueryDto } from './dto/app.dto';
 import { GenericResponseDto } from '../common/dto/response.dto';
+import { Platform } from './enum/platform.enum';
 
 @Injectable()
 export class AppsService {
@@ -145,6 +145,22 @@ export class AppsService {
       });
   }
 
+  // BUSCAR TODOS OS APPS MOBILE:
+  async findMobileApps(): Promise<App[]> {
+    return await this.appRepository.findBy({
+      platform: Platform.MOBILE,
+    });
+  }
+
+  // BUSCAR TODOS OS APPS WEB:
+  async findWebApps(): Promise<App[]> {
+    return await this.appRepository.findBy({
+      platform: Platform.WEB,
+    });
+  }
+
+  // BUSCAR APPS POR Query Params:
+
   // DELETAR APP:
   async destroy(appId: number): Promise<GenericResponseDto> {
     const existentApp = await this.appRepository.findOneBy({
@@ -172,10 +188,5 @@ export class AppsService {
           message: `Erro ao remover aplicativo: ${error}`,
         };
       });
-  }
-
-  // BUSCAR TODOS OS APPS:
-  async find(): Promise<App[]> {
-    return this.appRepository.find();
   }
 }

@@ -7,14 +7,14 @@ import {
   Param,
   Patch,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { Role } from 'src/users/enum/role.enum';
 import { AppsService } from './apps.service';
-import { CreateAppDto } from './dto/app.dto';
-import { UpdateAppDto } from './dto/app.dto';
+import { CreateAppDto, UpdateAppDto, AppQueryDto } from './dto/app.dto';
 
 @Controller('apps')
 export class AppsController {
@@ -36,11 +36,25 @@ export class AppsController {
     return this.appsService.update(id, data);
   }
 
-  // BUSCAR TODOS OS APPS:
+  // BUSCAR TODOS OS APPS MOBILE:
   @UseGuards(JwtAuthGuard)
-  @Get()
-  findAll() {
-    return this.appsService.find();
+  @Get('mobile')
+  findMobileApps() {
+    return this.appsService.findMobileApps();
+  }
+
+  // BUSCAR TODOS OS APPS WEB:
+  @UseGuards(JwtAuthGuard)
+  @Get('web')
+  findWebApps() {
+    return this.appsService.findWebApps();
+  }
+
+  // BUSCAR APPS POR Query Params:
+  @UseGuards(JwtAuthGuard)
+  @Get('filter')
+  findAppByQueryParams(@Query() queryParams: AppQueryDto) {
+    console.log(queryParams);
   }
 
   // BUSCAR APPS POR id:
