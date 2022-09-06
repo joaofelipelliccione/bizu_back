@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { Country } from './entities/country.entity';
 import { validate } from 'class-validator';
 import { CreateCountryDto } from './dto/country.dto';
-import { GenericResponseDto } from '../dto/response.dto';
+import { GenericResponseDto } from '../common/dto/response.dto';
 
 @Injectable()
 export class CountriesService {

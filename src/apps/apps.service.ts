@@ -5,7 +5,7 @@ import { Country } from '../countries/entities/country.entity';
 import { validate } from 'class-validator';
 import { CreateAppDto } from './dto/app.dto';
 import { UpdateAppDto } from './dto/app.dto';
-import { GenericResponseDto } from '../dto/response.dto';
+import { GenericResponseDto } from '../common/dto/response.dto';
 
 @Injectable()
 export class AppsService {

@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { validate } from 'class-validator';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
-import { GenericResponseDto } from '../dto/response.dto';
+import { GenericResponseDto } from '../common/dto/response.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
