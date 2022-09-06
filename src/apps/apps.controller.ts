@@ -54,15 +54,15 @@ export class AppsController {
   // BUSCAR APPS MOBILE POR Query Params:
   @UseGuards(JwtAuthGuard)
   @Get('mobile/filter')
-  findMobAppsByQueryParams(@Query() queryParams: AppQueryDto) {
-    console.log(queryParams);
+  findMobAppsByQuery(@Query() queryParams: AppQueryDto) {
+    return this.appsService.findAppsByQuery(Platform.MOBILE, queryParams);
   }
 
   // BUSCAR APPS WEB POR Query Params:
   @UseGuards(JwtAuthGuard)
   @Get('web/filter')
-  findWebAppsByQueryParams(@Query() queryParams: AppQueryDto) {
-    console.log(queryParams);
+  findWebAppsByQuery(@Query() queryParams: AppQueryDto) {
+    return this.appsService.findAppsByQuery(Platform.WEB, queryParams);
   }
 
   // BUSCAR APPS POR id:

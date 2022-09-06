@@ -153,6 +153,13 @@ export class AppsService {
   }
 
   // BUSCAR APPS POR Query Params:
+  async findAppsByQuery(
+    appPlatform: Platform,
+    queryObj: AppQueryDto,
+  ): Promise<any> {
+    console.log(appPlatform, queryObj);
+    return true;
+  }
 
   // DELETAR APP:
   async destroy(appId: number): Promise<GenericResponseDto> {
