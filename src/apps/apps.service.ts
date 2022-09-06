@@ -21,7 +21,7 @@ export class AppsService {
     return this.appRepository.findOneBy({ name: appName });
   }
 
-  // BUSCAR APP POR id.:
+  // BUSCAR APP POR id:
   async findByAppId(appId: number): Promise<App | GenericResponseDto> {
     const existentApp = await this.appRepository.findOneBy({
       id: appId,
@@ -145,17 +145,10 @@ export class AppsService {
       });
   }
 
-  // BUSCAR TODOS OS APPS MOBILE:
-  async findMobileApps(): Promise<App[]> {
+  // BUSCAR TODOS OS APPS POR PLATAFORMA:
+  async findAppsByPlatform(appPlatform: Platform): Promise<App[]> {
     return await this.appRepository.findBy({
-      platform: Platform.MOBILE,
-    });
-  }
-
-  // BUSCAR TODOS OS APPS WEB:
-  async findWebApps(): Promise<App[]> {
-    return await this.appRepository.findBy({
-      platform: Platform.WEB,
+      platform: appPlatform,
     });
   }
 
