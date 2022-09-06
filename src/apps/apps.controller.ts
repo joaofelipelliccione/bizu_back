@@ -43,6 +43,13 @@ export class AppsController {
     return this.appsService.find();
   }
 
+  // BUSCAR APPS POR id:
+  @UseGuards(JwtAuthGuard)
+  @Get('/:id')
+  findByAppId(@Param('id') id: number) {
+    return this.appsService.findByAppId(id);
+  }
+
   // DELETAR APP:
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)

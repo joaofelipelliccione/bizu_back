@@ -21,6 +21,22 @@ export class AppsService {
     return this.appRepository.findOneBy({ name: appName });
   }
 
+  // BUSCAR APP POR id.:
+  async findByAppId(appId: number): Promise<App | GenericResponseDto> {
+    const existentApp = await this.appRepository.findOneBy({
+      id: appId,
+    });
+
+    if (existentApp === null) {
+      return {
+        statusCode: 404,
+        message: `Aplicativo não encontrado :(`,
+      };
+    }
+
+    return existentApp;
+  }
+
   // CADASTRAR APP:
   async create(data: CreateAppDto): Promise<GenericResponseDto> {
     const existentApp = await this.findByAppName(data.name);
@@ -84,6 +100,7 @@ export class AppsService {
     const existentApp = await this.appRepository.findOneBy({
       id: appId,
     });
+
     if (existentApp === null) {
       return {
         statusCode: 404,
