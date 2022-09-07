@@ -18,9 +18,16 @@ export class UpdateUserDto {
       'A senha deve possuir pelo menos 8 caracteres, um número e uma letra maiúscula.',
   })
   password: string;
+
+  @MinLength(8, {
+    message:
+      'O link da foto de perfil deve apresentar, no mínimo, 8 caracteres.',
+  })
+  profilePicture: string;
 }
 
 export class UserDto extends CreateUserDto {
   id: string;
   role: Role;
+  profilePicture: string;
 }

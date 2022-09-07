@@ -103,6 +103,7 @@ export class UsersService {
     const userToUpdate = new UpdateUserDto();
     userToUpdate.username = data.username;
     userToUpdate.password = data.password;
+    userToUpdate.profilePicture = data.profilePicture;
 
     const validationErrors = await validate(userToUpdate, {
       skipMissingProperties: true,
@@ -144,13 +145,12 @@ export class UsersService {
     const { sub } = this.jwtService.decode(token);
 
     try {
-      const { id, username, email, role } = await this.userRepository.findOneBy(
-        {
+      const { id, username, email, profilePicture, role } =
+        await this.userRepository.findOneBy({
           id: sub,
-        },
-      );
+        });
 
-      return { id, username, email, role };
+      return { id, username, email, profilePicture, role };
     } catch (error) {
       return {
         statusCode: 404,

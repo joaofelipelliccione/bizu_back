@@ -32,6 +32,12 @@ export class User {
   })
   password: string;
 
+  @Column({
+    default:
+      'https://freepikpsd.com/file/2019/10/default-profile-image-png-1-Transparent-Images.png',
+  })
+  profilePicture: string;
+
   @CreateDateColumn()
   signUp: Date;
 
