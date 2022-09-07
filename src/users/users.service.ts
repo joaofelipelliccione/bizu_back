@@ -22,11 +22,6 @@ export class UsersService {
 
   // CADASTRAR USUÁRIO:
   async create(data: CreateUserDto): Promise<GenericResponseDto> {
-    const newUser = new User();
-    newUser.username = data.username;
-    newUser.email = data.email;
-    newUser.password = data.password;
-
     const existentUser = await this.findOneByUserMail(data.email);
     if (existentUser !== null) {
       return {
@@ -34,6 +29,11 @@ export class UsersService {
         message: `Usuário já registrado.`,
       };
     }
+
+    const newUser = new User();
+    newUser.username = data.username;
+    newUser.email = data.email;
+    newUser.password = data.password;
 
     const validationErrors = await validate(newUser);
     if (validationErrors.length > 0) {
