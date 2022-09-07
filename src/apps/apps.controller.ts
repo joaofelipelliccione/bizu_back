@@ -81,12 +81,12 @@ export class AppsController {
     );
   }
 
-  // BUSCAR APPS WEB POR FILTROS:
-  @UseGuards(JwtAuthGuard)
-  @Get('web/filter')
-  async findAllWebAppsByQuery(@Query() queryParams: AppQueryDto) {
-    return await this.appsService.findAllAppsByQuery(Platform.WEB, queryParams);
-  }
+  // // BUSCAR APPS WEB POR FILTROS:
+  // @UseGuards(JwtAuthGuard)
+  // @Get('web/filter')
+  // async findAllWebAppsByQuery(@Query() queryParams: AppQueryDto) {
+  //   return await this.appsService.findAllAppsByQuery(Platform.WEB, queryParams);
+  // }
 
   // BUSCAR APPS POR id:
   @UseGuards(JwtAuthGuard)

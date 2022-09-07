@@ -206,10 +206,42 @@ export class AppsService {
   // BUSCAR APPS POR FILTROS:
   async findAllAppsByQuery(
     appPlatform: Platform,
-    queryObj: AppQueryDto,
+    queryObj: Partial<AppQueryDto>,
   ): Promise<any> {
-    console.log(appPlatform, queryObj);
-    return true;
+    if (queryObj.category && queryObj.country) {
+      const categoriesArray = queryObj.category.split('_');
+      const countriesArray = queryObj.country
+        .split('_')
+        .map((element) => Number(element));
+
+      return console.log(categoriesArray, countriesArray);
+    }
+
+    if (queryObj.category) {
+      const categoriesArray = queryObj.category.split('_');
+
+      return await this.appRepository
+        .createQueryBuilder()
+        .where('app.category IN (:...categories)', {
+          categories: categoriesArray,
+        })
+        .andWhere('app.platform = :platform', { platform: appPlatform })
+        .getMany();
+    }
+
+    if (queryObj.country) {
+      const countriesArray = queryObj.country
+        .split('_')
+        .map((element) => Number(element));
+
+      return await this.appRepository
+        .createQueryBuilder()
+        .where('app.countryId IN (:...countries)', {
+          countries: countriesArray,
+        })
+        .andWhere('app.platform = :platform', { platform: appPlatform })
+        .getMany();
+    }
   }
 
   // DELETAR APP:
