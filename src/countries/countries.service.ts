@@ -19,17 +19,24 @@ export class CountriesService {
 
   // CADASTRAR PAÍS:
   async create(data: CreateCountryDto): Promise<GenericResponseDto> {
+    try {
+      const existentCountry = await this.findOneByCountryName(data.name);
+      if (existentCountry !== null) {
+        return {
+          statusCode: 409,
+          message: `País já registrado.`,
+        };
+      }
+    } catch (error) {
+      return {
+        statusCode: 500,
+        message: `Erro ao verificar existência de país pré registro: ${error}`,
+      };
+    }
+
     const newCountry = new Country();
     newCountry.name = data.name;
     newCountry.flag = data.flag;
-
-    const existentCountry = await this.findOneByCountryName(data.name);
-    if (existentCountry !== null) {
-      return {
-        statusCode: 409,
-        message: `País já registrado.`,
-      };
-    }
 
     const validationErrors = await validate(newCountry);
     if (validationErrors.length > 0) {
@@ -59,14 +66,21 @@ export class CountriesService {
 
   // DELETAR PAÍS:
   async destroy(countryId: number): Promise<GenericResponseDto> {
-    const existentCountry = await this.countryRepository.findOneBy({
-      id: countryId,
-    });
+    try {
+      const existentCountry = await this.countryRepository.findOneBy({
+        id: countryId,
+      });
 
-    if (existentCountry === null) {
+      if (existentCountry === null) {
+        return {
+          statusCode: 404,
+          message: `País não encontrado :(`,
+        };
+      }
+    } catch (error) {
       return {
-        statusCode: 404,
-        message: `País não encontrado :(`,
+        statusCode: 500,
+        message: `Erro ao verificar existência de país pré deleção: ${error}`,
       };
     }
 

@@ -22,11 +22,18 @@ export class UsersService {
 
   // CADASTRAR USUÁRIO:
   async create(data: CreateUserDto): Promise<GenericResponseDto> {
-    const existentUser = await this.findOneByUserMail(data.email);
-    if (existentUser !== null) {
+    try {
+      const existentUser = await this.findOneByUserMail(data.email);
+      if (existentUser !== null) {
+        return {
+          statusCode: 409,
+          message: `Usuário já registrado.`,
+        };
+      }
+    } catch (error) {
       return {
-        statusCode: 409,
-        message: `Usuário já registrado.`,
+        statusCode: 500,
+        message: `Erro ao verificar existência do usuário pré registro: ${error}`,
       };
     }
 
@@ -74,14 +81,22 @@ export class UsersService {
     data: Partial<UpdateUserDto>,
   ): Promise<GenericResponseDto> {
     const { sub } = this.jwtService.decode(token);
-    const existentUser = await this.userRepository.findOneBy({
-      id: sub,
-    });
 
-    if (existentUser === null) {
+    try {
+      const existentUser = await this.userRepository.findOneBy({
+        id: sub,
+      });
+
+      if (existentUser === null) {
+        return {
+          statusCode: 404,
+          message: `Usuário não encontrado :(`,
+        };
+      }
+    } catch (error) {
       return {
-        statusCode: 404,
-        message: `Usuário não encontrado :(`,
+        statusCode: 500,
+        message: `Erro ao verificar existência do usuário pré atualização: ${error}`,
       };
     }
 
@@ -147,14 +162,22 @@ export class UsersService {
   // DELETAR USUÁRIO:
   async destroy(token: string): Promise<GenericResponseDto> {
     const { sub } = this.jwtService.decode(token);
-    const existentUser = await this.userRepository.findOneBy({
-      id: sub,
-    });
 
-    if (existentUser === null) {
+    try {
+      const existentUser = await this.userRepository.findOneBy({
+        id: sub,
+      });
+
+      if (existentUser === null) {
+        return {
+          statusCode: 404,
+          message: `Usuário não encontrado :(`,
+        };
+      }
+    } catch (error) {
       return {
-        statusCode: 404,
-        message: `Usuário não encontrado :(`,
+        statusCode: 500,
+        message: `Erro ao verificar existência do usuário pré deleção: ${error}`,
       };
     }
 
