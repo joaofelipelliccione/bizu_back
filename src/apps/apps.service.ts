@@ -131,36 +131,61 @@ export class AppsService {
 
   // BUSCAR APP POR id:
   async findOneByAppId(appId: number): Promise<App | GenericResponseDto> {
-    const existentApp = await this.appRepository.findOneBy({
-      id: appId,
-    });
+    try {
+      const existentApp = await this.appRepository.findOneBy({
+        id: appId,
+      });
 
-    if (existentApp === null) {
+      if (existentApp === null) {
+        return {
+          statusCode: 404,
+          message: `Aplicativo não encontrado :(`,
+        };
+      }
+
+      return existentApp;
+    } catch (error) {
       return {
-        statusCode: 404,
-        message: `Aplicativo não encontrado :(`,
+        statusCode: 500,
+        message: `Erro ao buscar aplicativo: ${error}`,
       };
     }
-
-    return existentApp;
   }
 
   // BUSCAR TODOS OS APPS POR PLATAFORMA:
-  async findAllByAppPlatform(appPlatform: Platform): Promise<App[]> {
-    return await this.appRepository.findBy({
-      platform: appPlatform,
-    });
+  async findAllByAppPlatform(
+    appPlatform: Platform,
+  ): Promise<App[] | GenericResponseDto> {
+    return this.appRepository
+      .findBy({
+        platform: appPlatform,
+      })
+      .then((apps) => apps)
+      .catch((error) => {
+        return {
+          statusCode: 500,
+          message: `Erro ao buscar aplicativos: ${error}`,
+        };
+      });
   }
 
   // BUSCAR APPS POR name (PESQUISA LIKE %appName%):
   async findAllByLikeSearch(
     appPlatform: Platform,
     queryObj: AppQueryDto,
-  ): Promise<App[]> {
-    return await this.appRepository.findBy({
-      platform: appPlatform,
-      name: Like(`%${queryObj.name}%`),
-    });
+  ): Promise<App[] | GenericResponseDto> {
+    return this.appRepository
+      .findBy({
+        platform: appPlatform,
+        name: Like(`%${queryObj.name}%`),
+      })
+      .then((apps) => apps)
+      .catch((error) => {
+        return {
+          statusCode: 500,
+          message: `Erro ao buscar aplicativos: ${error}`,
+        };
+      });
   }
 
   // BUSCAR APPS POR FILTROS:
