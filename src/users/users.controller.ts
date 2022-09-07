@@ -1,19 +1,19 @@
 import {
   Controller,
-  Get,
+  UseGuards,
   Post,
   Patch,
+  Get,
+  Delete,
   Request,
   Body,
   Headers,
-  UseGuards,
-  Delete,
 } from '@nestjs/common';
+import { AuthService } from '../auth/auth.service';
+import { LocalAuthGuard } from '../auth/local-auth.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
-import { AuthService } from '../auth/auth.service';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { LocalAuthGuard } from '../auth/local-auth.guard';
 
 @Controller('users')
 export class UsersController {
@@ -24,8 +24,8 @@ export class UsersController {
 
   // CADASTRAR USUÁRIO:
   @Post('new')
-  create(@Body() newUser: CreateUserDto) {
-    return this.usersService.create(newUser);
+  async create(@Body() newUser: CreateUserDto) {
+    return await this.usersService.create(newUser);
   }
 
   // LOGIN DO USUÁRIO:
@@ -34,8 +34,8 @@ export class UsersController {
   async login(@Request() req) {
     const { accessToken } = await this.authService.login(req.user);
 
-    this.usersService.updateLastSignIn(accessToken); // Atualiza a coluna lastSignIn.
-    return this.authService.login(req.user);
+    await this.usersService.updateLastSignIn(accessToken); // Atualiza a coluna lastSignIn.
+    return await this.authService.login(req.user);
   }
 
   // ATUALIZAR USUÁRIO:
@@ -46,15 +46,15 @@ export class UsersController {
     @Body() data: Partial<UpdateUserDto>,
   ) {
     const token = authorization.replace('Bearer ', '');
-    return this.usersService.update(token, data);
+    return await this.usersService.update(token, data);
   }
 
   // BUSCAR USUÁRIO POR TOKEN --> id do usuário:
   @UseGuards(JwtAuthGuard)
   @Get('info')
-  async findOne(@Headers('Authorization') authorization: string) {
+  async findOneByUserToken(@Headers('Authorization') authorization: string) {
     const token = authorization.replace('Bearer ', '');
-    return this.usersService.findUserByToken(token);
+    return await this.usersService.findOneByUserToken(token);
   }
 
   // DELETAR USUÁRIO:
@@ -62,6 +62,6 @@ export class UsersController {
   @Delete('remove')
   async destroy(@Headers('Authorization') authorization: string) {
     const token = authorization.replace('Bearer ', '');
-    return this.usersService.destroy(token);
+    return await this.usersService.destroy(token);
   }
 }

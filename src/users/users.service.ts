@@ -1,10 +1,10 @@
 import { Injectable, Inject } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
 import { validate } from 'class-validator';
+import { User } from './entities/user.entity';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { GenericResponseDto } from '../common/dto/response.dto';
-import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -16,8 +16,8 @@ export class UsersService {
   ) {}
 
   // BUSCAR USUÁRIO POR email. Utilizado dentro do service create():
-  async findByUserMail(userMail: string): Promise<User | null> {
-    return this.userRepository.findOneBy({ email: userMail });
+  async findOneByUserMail(userMail: string): Promise<User | null> {
+    return await this.userRepository.findOneBy({ email: userMail });
   }
 
   // CADASTRAR USUÁRIO:
@@ -27,7 +27,7 @@ export class UsersService {
     newUser.email = data.email;
     newUser.password = data.password;
 
-    const existentUser = await this.findByUserMail(data.email);
+    const existentUser = await this.findOneByUserMail(data.email);
     if (existentUser !== null) {
       return {
         statusCode: 409,
@@ -106,7 +106,7 @@ export class UsersService {
       userToUpdate.password = bcrypt.hashSync(data.password, 8); // Senha criptografada.
     }
 
-    return await this.userRepository
+    return this.userRepository
       .update(sub, userToUpdate)
       .then(() => {
         return {
@@ -123,7 +123,7 @@ export class UsersService {
   }
 
   // BUSCAR USUÁRIO POR TOKEN --> id do usuário:
-  async findUserByToken(
+  async findOneByUserToken(
     token: string,
   ): Promise<Partial<User> | GenericResponseDto> {
     const { sub } = this.jwtService.decode(token);

@@ -3,9 +3,9 @@ import { Repository } from 'typeorm';
 import { App } from './entities/app.entity';
 import { Country } from '../countries/entities/country.entity';
 import { validate } from 'class-validator';
+import { Platform } from './enum/platform.enum';
 import { CreateAppDto, UpdateAppDto, AppQueryDto } from './dto/app.dto';
 import { GenericResponseDto } from '../common/dto/response.dto';
-import { Platform } from './enum/platform.enum';
 
 @Injectable()
 export class AppsService {
@@ -17,12 +17,12 @@ export class AppsService {
   ) {}
 
   // BUSCAR APP POR name. Utilizado dentro do service create():
-  async findByAppName(appName: string): Promise<App | null> {
-    return this.appRepository.findOneBy({ name: appName });
+  async findOneByAppName(appName: string): Promise<App | null> {
+    return await this.appRepository.findOneBy({ name: appName });
   }
 
   // BUSCAR APP POR id:
-  async findByAppId(appId: number): Promise<App | GenericResponseDto> {
+  async findOneByAppId(appId: number): Promise<App | GenericResponseDto> {
     const existentApp = await this.appRepository.findOneBy({
       id: appId,
     });
@@ -39,7 +39,7 @@ export class AppsService {
 
   // CADASTRAR APP:
   async create(data: CreateAppDto): Promise<GenericResponseDto> {
-    const existentApp = await this.findByAppName(data.name);
+    const existentApp = await this.findOneByAppName(data.name);
     if (existentApp !== null) {
       return {
         statusCode: 409,
@@ -146,14 +146,14 @@ export class AppsService {
   }
 
   // BUSCAR TODOS OS APPS POR PLATAFORMA:
-  async findAppsByPlatform(appPlatform: Platform): Promise<App[]> {
+  async findAllByAppPlatform(appPlatform: Platform): Promise<App[]> {
     return await this.appRepository.findBy({
       platform: appPlatform,
     });
   }
 
   // BUSCAR APPS POR Query Params:
-  async findAppsByQuery(
+  async findAllAppsByQuery(
     appPlatform: Platform,
     queryObj: AppQueryDto,
   ): Promise<any> {

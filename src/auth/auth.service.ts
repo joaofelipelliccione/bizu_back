@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { UsersService } from '../users/users.service';
 import { UserDto } from '../users/dto/user.dto';
 import { TokenResponseDto } from '../common/dto/response.dto';
 import * as bcrypt from 'bcrypt';
@@ -13,12 +13,13 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string): Promise<UserDto | null> {
-    const existentUser = await this.usersService.findByUserMail(email);
+    const existentUser = await this.usersService.findOneByUserMail(email);
 
     if (existentUser && bcrypt.compareSync(password, existentUser.password)) {
       const { ...result } = existentUser;
       return result;
     }
+
     return null;
   }
 

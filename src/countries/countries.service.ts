@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { Country } from './entities/country.entity';
 import { validate } from 'class-validator';
+import { Country } from './entities/country.entity';
 import { CreateCountryDto } from './dto/country.dto';
 import { GenericResponseDto } from '../common/dto/response.dto';
 
@@ -13,8 +13,8 @@ export class CountriesService {
   ) {}
 
   // BUSCAR PAÍS POR name. Utilizado dentro do service create():
-  async findByCountryName(countryName: string): Promise<Country | null> {
-    return this.countryRepository.findOneBy({ name: countryName });
+  async findOneByCountryName(countryName: string): Promise<Country | null> {
+    return await this.countryRepository.findOneBy({ name: countryName });
   }
 
   // CADASTRAR PAÍS:
@@ -23,7 +23,7 @@ export class CountriesService {
     newCountry.name = data.name;
     newCountry.flag = data.flag;
 
-    const existentCountry = await this.findByCountryName(data.name);
+    const existentCountry = await this.findOneByCountryName(data.name);
     if (existentCountry !== null) {
       return {
         statusCode: 409,
@@ -87,7 +87,7 @@ export class CountriesService {
   }
 
   // BUSCAR TODOS OS PAÍSES:
-  async find(): Promise<Country[]> {
-    return this.countryRepository.find();
+  async findAll(): Promise<Country[]> {
+    return await this.countryRepository.find();
   }
 }

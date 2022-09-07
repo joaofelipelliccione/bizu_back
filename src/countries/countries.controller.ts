@@ -1,15 +1,15 @@
 import {
   Controller,
+  UseGuards,
   Post,
-  Body,
   Get,
   Delete,
+  Body,
   Param,
-  UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
-import { Roles } from 'src/auth/roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
 import { Role } from 'src/users/enum/role.enum';
 import { CountriesService } from './countries.service';
 import { CreateCountryDto } from './dto/country.dto';
@@ -22,21 +22,21 @@ export class CountriesController {
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('new')
-  create(@Body() newCountry: CreateCountryDto) {
-    return this.countriesService.create(newCountry);
+  async create(@Body() newCountry: CreateCountryDto) {
+    return await this.countriesService.create(newCountry);
   }
 
   // BUSCAR TODOS OS PAÍSES:
   @Get()
-  findAll() {
-    return this.countriesService.find();
+  async findAll() {
+    return await this.countriesService.findAll();
   }
 
   // DELETAR PAÍS:
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete('remove/:id')
-  async deleteCountry(@Param('id') id: number) {
-    return this.countriesService.destroy(id);
+  async destroy(@Param('id') id: number) {
+    return await this.countriesService.destroy(id);
   }
 }
