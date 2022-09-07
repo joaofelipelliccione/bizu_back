@@ -23,11 +23,18 @@ export class AppsService {
 
   // CADASTRAR APP:
   async create(data: CreateAppDto): Promise<GenericResponseDto> {
-    const existentApp = await this.findOneByAppName(data.name);
-    if (existentApp !== null) {
+    try {
+      const existentApp = await this.findOneByAppName(data.name);
+      if (existentApp !== null) {
+        return {
+          statusCode: 409,
+          message: `Aplicativo já registrado.`,
+        };
+      }
+    } catch (error) {
       return {
-        statusCode: 409,
-        message: `Aplicativo já registrado.`,
+        statusCode: 500,
+        message: `Erro ao verificar existência de aplicativo pré registro: ${error}`,
       };
     }
 
@@ -81,14 +88,21 @@ export class AppsService {
     appId: number,
     data: Partial<UpdateAppDto>,
   ): Promise<GenericResponseDto> {
-    const existentApp = await this.appRepository.findOneBy({
-      id: appId,
-    });
+    try {
+      const existentApp = await this.appRepository.findOneBy({
+        id: appId,
+      });
 
-    if (existentApp === null) {
+      if (existentApp === null) {
+        return {
+          statusCode: 404,
+          message: `Aplicativo não encontrado :(`,
+        };
+      }
+    } catch (error) {
       return {
-        statusCode: 404,
-        message: `Aplicativo não encontrado :(`,
+        statusCode: 500,
+        message: `Erro ao verificar existência de aplicativo pré atualização: ${error}`,
       };
     }
 
@@ -131,25 +145,26 @@ export class AppsService {
 
   // BUSCAR APP POR id:
   async findOneByAppId(appId: number): Promise<App | GenericResponseDto> {
-    try {
-      const existentApp = await this.appRepository.findOneBy({
+    return this.appRepository
+      .findOneBy({
         id: appId,
-      });
+      })
+      .then((existentApp) => {
+        if (existentApp === null) {
+          return {
+            statusCode: 404,
+            message: `Aplicativo não encontrado :(`,
+          };
+        }
 
-      if (existentApp === null) {
+        return existentApp;
+      })
+      .catch((error) => {
         return {
-          statusCode: 404,
-          message: `Aplicativo não encontrado :(`,
+          statusCode: 500,
+          message: `Erro ao buscar aplicativo: ${error}`,
         };
-      }
-
-      return existentApp;
-    } catch (error) {
-      return {
-        statusCode: 500,
-        message: `Erro ao buscar aplicativo: ${error}`,
-      };
-    }
+      });
   }
 
   // BUSCAR TODOS OS APPS POR PLATAFORMA:
@@ -183,7 +198,7 @@ export class AppsService {
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao buscar aplicativos: ${error}`,
+          message: `Erro ao buscar aplicativos através de pesquisa por nome: ${error}`,
         };
       });
   }
@@ -199,14 +214,21 @@ export class AppsService {
 
   // DELETAR APP:
   async destroy(appId: number): Promise<GenericResponseDto> {
-    const existentApp = await this.appRepository.findOneBy({
-      id: appId,
-    });
+    try {
+      const existentApp = await this.appRepository.findOneBy({
+        id: appId,
+      });
 
-    if (existentApp === null) {
+      if (existentApp === null) {
+        return {
+          statusCode: 404,
+          message: `Aplicativo não encontrado :(`,
+        };
+      }
+    } catch (error) {
       return {
-        statusCode: 404,
-        message: `Aplicativo não encontrado :(`,
+        statusCode: 500,
+        message: `Erro ao verificar existência de aplicativo pré deleção: ${error}`,
       };
     }
 

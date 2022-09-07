@@ -33,7 +33,7 @@ export class UsersService {
     } catch (error) {
       return {
         statusCode: 500,
-        message: `Erro ao verificar existência do usuário pré registro: ${error}`,
+        message: `Erro ao verificar existência de usuário pré registro: ${error}`,
       };
     }
 
@@ -96,7 +96,7 @@ export class UsersService {
     } catch (error) {
       return {
         statusCode: 500,
-        message: `Erro ao verificar existência do usuário pré atualização: ${error}`,
+        message: `Erro ao verificar existência de usuário pré atualização: ${error}`,
       };
     }
 
@@ -177,7 +177,7 @@ export class UsersService {
     } catch (error) {
       return {
         statusCode: 500,
-        message: `Erro ao verificar existência do usuário pré deleção: ${error}`,
+        message: `Erro ao verificar existência de usuário pré deleção: ${error}`,
       };
     }
 
