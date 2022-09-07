@@ -87,7 +87,15 @@ export class CountriesService {
   }
 
   // BUSCAR TODOS OS PAÍSES:
-  async findAll(): Promise<Country[]> {
-    return await this.countryRepository.find();
+  async findAll(): Promise<Country[] | GenericResponseDto> {
+    return this.countryRepository
+      .find()
+      .then((countries) => countries)
+      .catch((error) => {
+        return {
+          statusCode: 500,
+          message: `Erro ao buscar países: ${error}`,
+        };
+      });
   }
 }
