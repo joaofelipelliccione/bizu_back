@@ -51,7 +51,27 @@ export class AppsController {
     return await this.appsService.findAllByAppPlatform(Platform.WEB);
   }
 
-  // BUSCAR APPS MOBILE POR Query Params:
+  // BUSCAR APPS MOBILE POR PESQUISA LIKE %appName%:
+  @UseGuards(JwtAuthGuard)
+  @Get('mobile/search')
+  async findAllMobAppsByLikeSearch(@Query() queryParams: AppQueryDto) {
+    return await this.appsService.findAllByLikeSearch(
+      Platform.MOBILE,
+      queryParams,
+    );
+  }
+
+  // BUSCAR APPS WEB POR PESQUISA LIKE %appName%:
+  @UseGuards(JwtAuthGuard)
+  @Get('web/search')
+  async findAllWeAppsByLikeSearch(@Query() queryParams: AppQueryDto) {
+    return await this.appsService.findAllByLikeSearch(
+      Platform.WEB,
+      queryParams,
+    );
+  }
+
+  // BUSCAR APPS MOBILE POR FILTROS:
   @UseGuards(JwtAuthGuard)
   @Get('mobile/filter')
   async findAllMobAppsByQuery(@Query() queryParams: AppQueryDto) {
@@ -61,7 +81,7 @@ export class AppsController {
     );
   }
 
-  // BUSCAR APPS WEB POR Query Params:
+  // BUSCAR APPS WEB POR FILTROS:
   @UseGuards(JwtAuthGuard)
   @Get('web/filter')
   async findAllWebAppsByQuery(@Query() queryParams: AppQueryDto) {
