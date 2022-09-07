@@ -214,7 +214,16 @@ export class AppsService {
         .split('_')
         .map((element) => Number(element));
 
-      return console.log(categoriesArray, countriesArray);
+      return await this.appRepository
+        .createQueryBuilder()
+        .where('app.category IN (:...categories)', {
+          categories: categoriesArray,
+        })
+        .andWhere('app.countryId IN (:...countries)', {
+          countries: countriesArray,
+        })
+        .andWhere('app.platform = :platform', { platform: appPlatform })
+        .getMany();
     }
 
     if (queryObj.category) {
