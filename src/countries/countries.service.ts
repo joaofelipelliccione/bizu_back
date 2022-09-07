@@ -2,7 +2,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { validate } from 'class-validator';
 import { Country } from './entities/country.entity';
-import { CreateCountryDto } from './dto/country.dto';
+import { CreateCountryDto, UpdateCountryDto } from './dto/country.dto';
 import { GenericResponseDto } from '../common/dto/response.dto';
 
 @Injectable()
@@ -60,6 +60,61 @@ export class CountriesService {
         return {
           statusCode: 500,
           message: `Erro ao registrar país: ${error}`,
+        };
+      });
+  }
+
+  // ATUALIZAR PAÍS:
+  async update(
+    countryId: number,
+    data: Partial<UpdateCountryDto>,
+  ): Promise<GenericResponseDto> {
+    try {
+      const existentCountry = await this.countryRepository.findOneBy({
+        id: countryId,
+      });
+
+      if (existentCountry === null) {
+        return {
+          statusCode: 404,
+          message: `País não encontrado :(`,
+        };
+      }
+    } catch (error) {
+      return {
+        statusCode: 500,
+        message: `Erro ao verificar existência de país pré atualização: ${error}`,
+      };
+    }
+
+    const countryToUpdate = new UpdateCountryDto();
+    countryToUpdate.name = data.name;
+    countryToUpdate.flag = data.flag;
+
+    const validationErrors = await validate(countryToUpdate, {
+      skipMissingProperties: true,
+    });
+    if (validationErrors.length > 0) {
+      return {
+        statusCode: 400,
+        message: `Erro de validação: ${
+          Object.values(validationErrors[0].constraints)[0]
+        }`,
+      };
+    }
+
+    return await this.countryRepository
+      .update(countryId, countryToUpdate)
+      .then(() => {
+        return {
+          statusCode: 200,
+          message: 'País atualizado com sucesso!!',
+        };
+      })
+      .catch((error) => {
+        return {
+          statusCode: 500,
+          message: `Erro ao atualizar país: ${error}`,
         };
       });
   }

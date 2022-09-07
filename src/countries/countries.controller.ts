@@ -3,6 +3,7 @@ import {
   UseGuards,
   Post,
   Get,
+  Patch,
   Delete,
   Body,
   Param,
@@ -12,7 +13,7 @@ import { RolesGuard } from 'src/auth/roles.guard';
 import { Roles } from 'src/auth/roles.decorator';
 import { Role } from 'src/users/enum/role.enum';
 import { CountriesService } from './countries.service';
-import { CreateCountryDto } from './dto/country.dto';
+import { CreateCountryDto, UpdateCountryDto } from './dto/country.dto';
 
 @Controller('countries')
 export class CountriesController {
@@ -24,6 +25,17 @@ export class CountriesController {
   @Post('new')
   async create(@Body() newCountry: CreateCountryDto) {
     return await this.countriesService.create(newCountry);
+  }
+
+  // ATUALIZAR PAÍS:
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Patch('update/:id')
+  async update(
+    @Param('id') id: number,
+    @Body() data: Partial<UpdateCountryDto>,
+  ) {
+    return await this.countriesService.update(id, data);
   }
 
   // BUSCAR TODOS OS PAÍSES:
