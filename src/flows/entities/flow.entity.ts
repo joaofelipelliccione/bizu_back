@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { MinLength } from 'class-validator';
+import { Screen } from '../../screens/entities/screen.entity';
 
 @Entity()
 export class Flow {
@@ -17,4 +18,8 @@ export class Flow {
     message: 'A descrição do fluxo deve apresentar, no mínimo, 8 caracteres.',
   })
   description!: string;
+
+  // RELAÇÕES:
+  @OneToMany(() => Screen, (screen) => screen.flow)
+  screens: Screen[];
 }

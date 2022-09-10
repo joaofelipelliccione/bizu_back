@@ -4,12 +4,15 @@ import { validate } from 'class-validator';
 import { Screen } from './entities/screen.entity';
 import { CreateScreenDto, UpdateScreenDto } from './dto/screen.dto';
 import { GenericResponseDto } from '../common/dto/response.dto';
+import { Flow } from '../flows/entities/flow.entity';
 
 @Injectable()
 export class ScreensService {
   constructor(
     @Inject('SCREEN_REPOSITORY')
     private screenRepository: Repository<Screen>,
+    @Inject('FLOW_REPOSITORY')
+    private flowRepository: Repository<Flow>,
   ) {}
 
   // BUSCAR TELA POR print. Utilizado dentro do service create():
@@ -35,8 +38,19 @@ export class ScreensService {
       };
     }
 
+    const existentFlow = await this.flowRepository.findOneBy({
+      id: data.flow,
+    });
+    if (existentFlow === null) {
+      return {
+        statusCode: 400,
+        message: `Antes de cadastrar a tela, deve-se registrar o fluxo da qual ela faz parte.`,
+      };
+    }
+
     const newScreen = new Screen();
     newScreen.print = data.print;
+    newScreen.flow = existentFlow;
 
     const validationErrors = await validate(newScreen);
     if (validationErrors.length > 0) {
@@ -60,6 +74,19 @@ export class ScreensService {
         return {
           statusCode: 500,
           message: `Erro ao registrar tela: ${error}`,
+        };
+      });
+  }
+
+  // BUSCAR TODAS AS TELAS:
+  async findAll(): Promise<Screen[] | GenericResponseDto> {
+    return this.screenRepository
+      .find()
+      .then((screens) => screens)
+      .catch((error) => {
+        return {
+          statusCode: 500,
+          message: `Erro ao buscar telas: ${error}`,
         };
       });
   }

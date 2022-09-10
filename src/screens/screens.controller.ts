@@ -26,4 +26,11 @@ export class ScreensController {
   async create(@Body() newScreen: CreateScreenDto) {
     return await this.screensService.create(newScreen);
   }
+
+  // BUSCAR TODAS AS TELAS:
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get()
+  async findAll() {
+    return await this.screensService.findAll();
+  }
 }
