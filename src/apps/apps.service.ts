@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { Like, Repository } from 'typeorm';
+import { Repository, Like, In } from 'typeorm';
 import { App } from './entities/app.entity';
 import { Country } from '../countries/entities/country.entity';
 import { validate } from 'class-validator';
@@ -207,7 +207,7 @@ export class AppsService {
   async findAllAppsByQuery(
     appPlatform: Platform,
     queryObj: Partial<AppQueryDto>,
-  ): Promise<any> {
+  ): Promise<App[] | GenericResponseDto> {
     if (queryObj.category && queryObj.country) {
       const categoriesArray = queryObj.category.split('_');
       const countriesArray = queryObj.country
@@ -229,13 +229,18 @@ export class AppsService {
     if (queryObj.category) {
       const categoriesArray = queryObj.category.split('_');
 
-      return await this.appRepository
-        .createQueryBuilder()
-        .where('app.category IN (:...categories)', {
-          categories: categoriesArray,
+      return this.appRepository
+        .findBy({
+          category: In(categoriesArray),
+          platform: appPlatform,
         })
-        .andWhere('app.platform = :platform', { platform: appPlatform })
-        .getMany();
+        .then((apps) => apps)
+        .catch((error) => {
+          return {
+            statusCode: 500,
+            message: `Erro ao buscar aplicação utilizando filtro de categoria: ${error}`,
+          };
+        });
     }
 
     if (queryObj.country) {
@@ -243,13 +248,18 @@ export class AppsService {
         .split('_')
         .map((element) => Number(element));
 
-      return await this.appRepository
-        .createQueryBuilder()
-        .where('app.countryId IN (:...countries)', {
-          countries: countriesArray,
+      return this.appRepository
+        .findBy({
+          country: { id: In(countriesArray) },
+          platform: appPlatform,
         })
-        .andWhere('app.platform = :platform', { platform: appPlatform })
-        .getMany();
+        .then((apps) => apps)
+        .catch((error) => {
+          return {
+            statusCode: 500,
+            message: `Erro ao buscar aplicação utilizando filtro de país: ${error}`,
+          };
+        });
     }
   }
 
