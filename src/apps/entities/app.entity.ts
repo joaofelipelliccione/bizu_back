@@ -12,51 +12,54 @@ import { Country } from '../../countries/entities/country.entity';
 @Entity()
 export class App {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
-  @Column({ length: 7 })
+  @Column('enum', { nullable: false, enum: Platform })
   @IsEnum(Platform, {
     message: 'Plataformas aceitas: Mobile | Web.',
   })
-  platform: Platform;
+  platform!: Platform;
 
-  @Column({ length: 20 })
+  @Column('varchar', { nullable: false, length: 20 })
   @MinLength(1, {
     message: 'O nome do aplicativo deve possuir, no mínimo, 1 caractere.',
   })
-  name: string;
+  name!: string;
 
-  @Column()
+  @Column('varchar', { nullable: false })
   @MinLength(8, {
     message: 'O link do logotipo deve apresentar, no mínimo, 8 caracteres',
   })
-  logo: string;
+  logo!: string;
 
-  @Column({ length: 60 })
+  @Column('varchar', { nullable: false, length: 60 })
   @MinLength(3, {
     message: 'O slogan do aplicativo deve possuir, no mínimo, 3 caracteres.',
   })
-  slogan: string;
+  slogan!: string;
 
-  @Column()
+  @Column('varchar', { nullable: false })
   @MinLength(8, {
     message: 'O link do website deve apresentar, no mínimo, 8 caracteres',
   })
-  websiteLink: string;
+  websiteLink!: string;
 
-  @Column()
+  @Column('varchar', { nullable: false, length: 40 })
   @MinLength(3, {
     message: 'O categoria do aplicativo deve possuir, no mínimo, 3 caracteres.',
   })
-  category: string;
+  category!: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
+  @CreateDateColumn({ nullable: false })
+  createdAt!: Date;
 
-  @Column()
+  @Column({ nullable: true })
   lastUpdate: Date;
 
   // RELAÇÕES:
-  @ManyToOne(() => Country, (country) => country.apps, { eager: true })
-  country: Country;
+  @ManyToOne(() => Country, (country) => country.apps, {
+    nullable: false,
+    eager: true,
+  })
+  country!: Country;
 }
