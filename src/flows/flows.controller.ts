@@ -26,4 +26,12 @@ export class FlowsController {
   async create(@Body() newCountry: CreateFlowDto) {
     return await this.flowsService.create(newCountry);
   }
+
+  // ATUALIZAR PAÍS:
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Patch('update/:id')
+  async update(@Param('id') id: number, @Body() data: Partial<UpdateFlowDto>) {
+    return await this.flowsService.update(id, data);
+  }
 }

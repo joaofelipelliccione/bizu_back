@@ -63,4 +63,59 @@ export class FlowsService {
         };
       });
   }
+
+  // ATUALIZAR PAÍS:
+  async update(
+    flowId: number,
+    data: Partial<UpdateFlowDto>,
+  ): Promise<GenericResponseDto> {
+    try {
+      const existentFlow = await this.flowRepository.findOneBy({
+        id: flowId,
+      });
+
+      if (existentFlow === null) {
+        return {
+          statusCode: 404,
+          message: `Fluxo não encontrado :(`,
+        };
+      }
+    } catch (error) {
+      return {
+        statusCode: 500,
+        message: `Erro ao verificar existência de fluxo pré atualização: ${error}`,
+      };
+    }
+
+    const flowToUpdate = new UpdateFlowDto();
+    flowToUpdate.name = data.name;
+    flowToUpdate.description = data.description;
+
+    const validationErrors = await validate(flowToUpdate, {
+      skipMissingProperties: true,
+    });
+    if (validationErrors.length > 0) {
+      return {
+        statusCode: 400,
+        message: `Erro de validação: ${
+          Object.values(validationErrors[0].constraints)[0]
+        }`,
+      };
+    }
+
+    return await this.flowRepository
+      .update(flowId, flowToUpdate)
+      .then(() => {
+        return {
+          statusCode: 200,
+          message: 'Fluxo atualizado com sucesso!!',
+        };
+      })
+      .catch((error) => {
+        return {
+          statusCode: 500,
+          message: `Erro ao atualizar fluxo: ${error}`,
+        };
+      });
+  }
 }
