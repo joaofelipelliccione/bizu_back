@@ -25,6 +25,7 @@ export class ScreensService {
 
   // CADASTRAR TELA:
   async create(data: CreateScreenDto[]): Promise<GenericResponseDto> {
+    // 1ª PT: Validações de existência:
     try {
       await Promise.all(
         data.map(async ({ print, flow, app }) => {
@@ -57,45 +58,54 @@ export class ScreensService {
       };
     }
 
-    await Promise.all(
+    // 2ª PT: Validações de formato (class-validator):
+    try {
+      await Promise.all(
+        data.map(async ({ print, flow, app }) => {
+          const newScreen = new Screen();
+          newScreen.print = print;
+          newScreen.flow = await this.flowRepository.findOneBy({ id: flow });
+          newScreen.app = await this.appRepository.findOneBy({ id: app });
+
+          const validationErrors = await validate(newScreen);
+          if (validationErrors.length > 0) {
+            throw new Error(Object.values(validationErrors[0].constraints)[0]);
+          }
+        }),
+      );
+    } catch (error) {
+      return {
+        statusCode: 400,
+        message: `${error}`,
+      };
+    }
+
+    // 3ª PT: Salvando no banco:
+    const jf = await Promise.all(
       data.map(async ({ print, flow, app }) => {
         const newScreen = new Screen();
         newScreen.print = print;
         newScreen.flow = await this.flowRepository.findOneBy({ id: flow });
         newScreen.app = await this.appRepository.findOneBy({ id: app });
 
-        const validationErrors = await validate(newScreen);
-        if (validationErrors.length > 0) {
-          return {
-            statusCode: 400,
-            message: `Erro de validação: ${
-              Object.values(validationErrors[0].constraints)[0]
-            }`,
-          };
-        }
-
-        await this.screenRepository.manager.transaction(
-          async (transactionalEntityManager) => {
-            await transactionalEntityManager.save(newScreen);
-          },
-        );
-
-        // return await this.screenRepository
-        //   .save(newScreen)
-        //   .then(() => {
-        //     return {
-        //       statusCode: 201,
-        //       message: 'Tela registrada com sucesso!!',
-        //     };
-        //   })
-        //   .catch((error) => {
-        //     return {
-        //       statusCode: 500,
-        //       message: `Erro ao registrar tela: ${error}`,
-        //     };
-        //   });
+        return await this.screenRepository
+          .save(newScreen)
+          .then(() => {
+            return {
+              statusCode: 201,
+              message: 'Tela registrada com sucesso!!',
+            };
+          })
+          .catch((error) => {
+            return {
+              statusCode: 500,
+              message: `Erro ao registrar tela: ${error}`,
+            };
+          });
       }),
     );
+
+    console.log(jf);
   }
 
   // BUSCAR TODAS AS TELAS:
