@@ -119,6 +119,19 @@ export class FlowsService {
       });
   }
 
+  // BUSCAR TODOS OS FLUXOS:
+  async findAll(): Promise<Flow[] | GenericResponseDto> {
+    return this.flowRepository
+      .find()
+      .then((flows) => flows)
+      .catch((error) => {
+        return {
+          statusCode: 500,
+          message: `Erro ao buscar fluxos: ${error}`,
+        };
+      });
+  }
+
   // DELETAR FLUXO:
   async destroy(flowId: number): Promise<GenericResponseDto> {
     try {

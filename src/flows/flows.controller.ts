@@ -35,6 +35,13 @@ export class FlowsController {
     return await this.flowsService.update(id, data);
   }
 
+  // BUSCAR TODOS OS FLUXOS:
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get()
+  async findAll() {
+    return await this.flowsService.findAll();
+  }
+
   // DELETAR FLUXO:
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)

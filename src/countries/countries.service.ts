@@ -119,6 +119,19 @@ export class CountriesService {
       });
   }
 
+  // BUSCAR TODOS OS PAÍSES:
+  async findAll(): Promise<Country[] | GenericResponseDto> {
+    return this.countryRepository
+      .find()
+      .then((countries) => countries)
+      .catch((error) => {
+        return {
+          statusCode: 500,
+          message: `Erro ao buscar países: ${error}`,
+        };
+      });
+  }
+
   // DELETAR PAÍS:
   async destroy(countryId: number): Promise<GenericResponseDto> {
     try {
@@ -151,19 +164,6 @@ export class CountriesService {
         return {
           statusCode: 500,
           message: `Erro ao remover País: ${error}`,
-        };
-      });
-  }
-
-  // BUSCAR TODOS OS PAÍSES:
-  async findAll(): Promise<Country[] | GenericResponseDto> {
-    return this.countryRepository
-      .find()
-      .then((countries) => countries)
-      .catch((error) => {
-        return {
-          statusCode: 500,
-          message: `Erro ao buscar países: ${error}`,
         };
       });
   }
