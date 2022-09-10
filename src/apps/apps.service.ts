@@ -214,16 +214,19 @@ export class AppsService {
         .split('_')
         .map((element) => Number(element));
 
-      return await this.appRepository
-        .createQueryBuilder()
-        .where('app.category IN (:...categories)', {
-          categories: categoriesArray,
+      return this.appRepository
+        .findBy({
+          platform: appPlatform,
+          category: In(categoriesArray),
+          country: { id: In(countriesArray) },
         })
-        .andWhere('app.countryId IN (:...countries)', {
-          countries: countriesArray,
-        })
-        .andWhere('app.platform = :platform', { platform: appPlatform })
-        .getMany();
+        .then((apps) => apps)
+        .catch((error) => {
+          return {
+            statusCode: 500,
+            message: `Erro ao buscar aplicação utilizando filtro de categoria e país: ${error}`,
+          };
+        });
     }
 
     if (queryObj.category) {
@@ -231,8 +234,8 @@ export class AppsService {
 
       return this.appRepository
         .findBy({
-          category: In(categoriesArray),
           platform: appPlatform,
+          category: In(categoriesArray),
         })
         .then((apps) => apps)
         .catch((error) => {
@@ -250,8 +253,8 @@ export class AppsService {
 
       return this.appRepository
         .findBy({
-          country: { id: In(countriesArray) },
           platform: appPlatform,
+          country: { id: In(countriesArray) },
         })
         .then((apps) => apps)
         .catch((error) => {
