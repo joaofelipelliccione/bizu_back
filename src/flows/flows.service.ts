@@ -118,4 +118,40 @@ export class FlowsService {
         };
       });
   }
+
+  // DELETAR FLUXO:
+  async destroy(flowId: number): Promise<GenericResponseDto> {
+    try {
+      const existentFlow = await this.flowRepository.findOneBy({
+        id: flowId,
+      });
+
+      if (existentFlow === null) {
+        return {
+          statusCode: 404,
+          message: `Fluxo não encontrado :(`,
+        };
+      }
+    } catch (error) {
+      return {
+        statusCode: 500,
+        message: `Erro ao verificar existência de fluxo pré deleção: ${error}`,
+      };
+    }
+
+    return this.flowRepository
+      .delete({ id: flowId })
+      .then(() => {
+        return {
+          statusCode: 200,
+          message: 'Fluxo removido com sucesso.',
+        };
+      })
+      .catch((error) => {
+        return {
+          statusCode: 500,
+          message: `Erro ao remover Fluxo: ${error}`,
+        };
+      });
+  }
 }

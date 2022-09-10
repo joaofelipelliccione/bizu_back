@@ -27,11 +27,19 @@ export class FlowsController {
     return await this.flowsService.create(newCountry);
   }
 
-  // ATUALIZAR PAÍS:
+  // ATUALIZAR FLUXO:
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Patch('update/:id')
   async update(@Param('id') id: number, @Body() data: Partial<UpdateFlowDto>) {
     return await this.flowsService.update(id, data);
+  }
+
+  // DELETAR FLUXO:
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Delete('remove/:id')
+  async destroy(@Param('id') id: number) {
+    return await this.flowsService.destroy(id);
   }
 }
