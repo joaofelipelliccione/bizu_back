@@ -74,20 +74,26 @@ export class ScreensService {
           };
         }
 
-        return await this.screenRepository
-          .save(newScreen)
-          .then(() => {
-            return {
-              statusCode: 201,
-              message: 'Tela registrada com sucesso!!',
-            };
-          })
-          .catch((error) => {
-            return {
-              statusCode: 500,
-              message: `Erro ao registrar tela: ${error}`,
-            };
-          });
+        await this.screenRepository.manager.transaction(
+          async (transactionalEntityManager) => {
+            await transactionalEntityManager.save(newScreen);
+          },
+        );
+
+        // return await this.screenRepository
+        //   .save(newScreen)
+        //   .then(() => {
+        //     return {
+        //       statusCode: 201,
+        //       message: 'Tela registrada com sucesso!!',
+        //     };
+        //   })
+        //   .catch((error) => {
+        //     return {
+        //       statusCode: 500,
+        //       message: `Erro ao registrar tela: ${error}`,
+        //     };
+        //   });
       }),
     );
   }
