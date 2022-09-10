@@ -24,72 +24,72 @@ export class ScreensService {
   }
 
   // CADASTRAR TELA:
-  async create(data: CreateScreenDto): Promise<GenericResponseDto> {
+  async create(data: CreateScreenDto[]): Promise<GenericResponseDto> {
     try {
-      const existentScreen = await this.findOneByScreenPrint(data.print);
+      await Promise.all(
+        data.map(async ({ print, flow, app }) => {
+          const existentScreen = await this.findOneByScreenPrint(print);
+          if (existentScreen !== null) {
+            throw new Error('Tela já registrada.');
+          }
 
-      if (existentScreen !== null) {
-        return {
-          statusCode: 409,
-          message: `Tela já registrada.`,
-        };
-      }
+          const existentFlow = await this.flowRepository.findOneBy({
+            id: flow,
+          });
+          if (existentFlow === null) {
+            throw new Error(
+              'Antes de cadastrar a tela, deve-se registrar o fluxo da qual ela faz parte.',
+            );
+          }
+
+          const existentApp = await this.appRepository.findOneBy({ id: app });
+          if (existentApp === null) {
+            throw new Error(
+              'Antes de cadastrar a tela, deve-se registrar o app da qual ela faz parte.',
+            );
+          }
+        }),
+      );
     } catch (error) {
       return {
         statusCode: 500,
-        message: `Erro ao verificar existência de tela pré registro: ${error}`,
+        message: `Erro encontrado pré registro de tela - ${error}`,
       };
     }
 
-    const existentFlow = await this.flowRepository.findOneBy({
-      id: data.flow,
-    });
-    if (existentFlow === null) {
-      return {
-        statusCode: 400,
-        message: `Antes de cadastrar a tela, deve-se registrar o fluxo da qual ela faz parte.`,
-      };
-    }
+    await Promise.all(
+      data.map(async ({ print, flow, app }) => {
+        const newScreen = new Screen();
+        newScreen.print = print;
+        newScreen.flow = await this.flowRepository.findOneBy({ id: flow });
+        newScreen.app = await this.appRepository.findOneBy({ id: app });
 
-    const existentApp = await this.appRepository.findOneBy({
-      id: data.app,
-    });
-    if (existentApp === null) {
-      return {
-        statusCode: 400,
-        message: `Antes de cadastrar a tela, deve-se registrar o app da qual ela faz parte.`,
-      };
-    }
+        const validationErrors = await validate(newScreen);
+        if (validationErrors.length > 0) {
+          return {
+            statusCode: 400,
+            message: `Erro de validação: ${
+              Object.values(validationErrors[0].constraints)[0]
+            }`,
+          };
+        }
 
-    const newScreen = new Screen();
-    newScreen.print = data.print;
-    newScreen.flow = existentFlow;
-    newScreen.app = existentApp;
-
-    const validationErrors = await validate(newScreen);
-    if (validationErrors.length > 0) {
-      return {
-        statusCode: 400,
-        message: `Erro de validação: ${
-          Object.values(validationErrors[0].constraints)[0]
-        }`,
-      };
-    }
-
-    return this.screenRepository
-      .save(newScreen)
-      .then(() => {
-        return {
-          statusCode: 201,
-          message: 'Tela registrada com sucesso!!',
-        };
-      })
-      .catch((error) => {
-        return {
-          statusCode: 500,
-          message: `Erro ao registrar tela: ${error}`,
-        };
-      });
+        return await this.screenRepository
+          .save(newScreen)
+          .then(() => {
+            return {
+              statusCode: 201,
+              message: 'Tela registrada com sucesso!!',
+            };
+          })
+          .catch((error) => {
+            return {
+              statusCode: 500,
+              message: `Erro ao registrar tela: ${error}`,
+            };
+          });
+      }),
+    );
   }
 
   // BUSCAR TODAS AS TELAS:

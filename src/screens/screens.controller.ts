@@ -23,7 +23,7 @@ export class ScreensController {
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post('new')
-  async create(@Body() newScreen: CreateScreenDto) {
+  async create(@Body() newScreen: CreateScreenDto[]) {
     return await this.screensService.create(newScreen);
   }
 
