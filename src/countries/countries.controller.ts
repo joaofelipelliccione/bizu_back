@@ -40,6 +40,7 @@ export class CountriesController {
 
   // BUSCAR TODOS OS PAÍSES:
   @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async findAll() {
     return await this.countriesService.findAll();
   }
