@@ -4,43 +4,43 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
 } from 'typeorm';
-import { Role } from '../enum/role.enum';
 import { MinLength, IsEmail, Matches } from 'class-validator';
+import { Role } from '../enum/role.enum';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
-  @Column({ type: 'enum', enum: Role, default: Role.USER })
-  role: Role;
+  @Column('enum', { nullable: false, enum: Role, default: Role.USER })
+  role!: Role;
 
-  @Column({ length: 100 })
+  @Column('varchar', { nullable: false, length: 100 })
   @MinLength(3, {
     message: 'O nome do usuário deve possuir, no mínimo, 3 caracteres.',
   })
-  username: string;
+  username!: string;
 
-  @Column({ length: 255 })
+  @Column('varchar', { nullable: false, length: 255 })
   @IsEmail()
-  email: string;
+  email!: string;
 
-  @Column({ length: 255 })
+  @Column('varchar', { nullable: false, length: 255 })
   @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
     message:
       'A senha deve possuir pelo menos 8 caracteres, um número e uma letra maiúscula.',
   })
-  password: string;
+  password!: string;
 
-  @Column({
-    default:
-      'https://freepikpsd.com/file/2019/10/default-profile-image-png-1-Transparent-Images.png',
+  @Column('varchar', {
+    nullable: false,
+    default: 'https://default-profile-image-png-1-Transparent-Images.png',
   })
-  profilePicture: string;
+  profilePicture!: string;
 
-  @CreateDateColumn()
-  signUp: Date;
+  @CreateDateColumn({ nullable: false })
+  signUp!: Date;
 
-  @Column()
+  @Column({ nullable: true })
   lastSignIn: Date;
 }
