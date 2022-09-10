@@ -4,10 +4,12 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { MinLength, IsEnum } from 'class-validator';
 import { Platform } from '../enum/platform.enum';
 import { Country } from '../../countries/entities/country.entity';
+import { Screen } from '../../screens/entities/screen.entity';
 
 @Entity()
 export class App {
@@ -62,4 +64,10 @@ export class App {
     eager: true,
   })
   country!: Country;
+
+  @OneToMany(() => Screen, (screen) => screen.app, {
+    nullable: false,
+    eager: true,
+  })
+  screens!: Screen[];
 }

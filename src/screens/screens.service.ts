@@ -5,6 +5,7 @@ import { Screen } from './entities/screen.entity';
 import { CreateScreenDto, UpdateScreenDto } from './dto/screen.dto';
 import { GenericResponseDto } from '../common/dto/response.dto';
 import { Flow } from '../flows/entities/flow.entity';
+import { App } from '../apps/entities/app.entity';
 
 @Injectable()
 export class ScreensService {
@@ -13,6 +14,8 @@ export class ScreensService {
     private screenRepository: Repository<Screen>,
     @Inject('FLOW_REPOSITORY')
     private flowRepository: Repository<Flow>,
+    @Inject('APP_REPOSITORY')
+    private appRepository: Repository<App>,
   ) {}
 
   // BUSCAR TELA POR print. Utilizado dentro do service create():
@@ -48,9 +51,20 @@ export class ScreensService {
       };
     }
 
+    const existentApp = await this.appRepository.findOneBy({
+      id: data.app,
+    });
+    if (existentApp === null) {
+      return {
+        statusCode: 400,
+        message: `Antes de cadastrar a tela, deve-se registrar o app da qual ela faz parte.`,
+      };
+    }
+
     const newScreen = new Screen();
     newScreen.print = data.print;
     newScreen.flow = existentFlow;
+    newScreen.app = existentApp;
 
     const validationErrors = await validate(newScreen);
     if (validationErrors.length > 0) {

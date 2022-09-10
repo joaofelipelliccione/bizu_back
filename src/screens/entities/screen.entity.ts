@@ -1,6 +1,7 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { MinLength } from 'class-validator';
 import { Flow } from '../../flows/entities/flow.entity';
+import { App } from '../../apps/entities/app.entity';
 
 @Entity()
 export class Screen {
@@ -20,4 +21,9 @@ export class Screen {
     eager: true,
   })
   flow!: Flow;
+
+  @ManyToOne(() => App, (app) => app.screens, {
+    nullable: false,
+  })
+  app!: App;
 }
