@@ -1,5 +1,4 @@
 import { MinLength } from 'class-validator';
-import { App } from '../../apps/entities/app.entity';
 
 export class CreateCountryDto {
   name: string;

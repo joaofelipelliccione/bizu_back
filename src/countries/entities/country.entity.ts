@@ -5,20 +5,20 @@ import { App } from '../../apps/entities/app.entity';
 @Entity()
 export class Country {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
-  @Column({ length: 30 })
+  @Column('varchar', { nullable: false, length: 30 })
   @MinLength(3, {
     message: 'O nome do país deve possuir, no mínimo, 3 caracteres.',
   })
-  name: string;
+  name!: string;
 
-  @Column()
+  @Column('varchar', { nullable: false })
   @MinLength(8, {
     message:
       'O link da imagem da bandeira do país deve apresentar, no mínimo, 8 caracteres.',
   })
-  flag: string;
+  flag!: string;
 
   // RELAÇÕES:
   @OneToMany(() => App, (app) => app.country)
