@@ -6,7 +6,13 @@ import { FlowsModule } from './flows/flows.module';
 import { ScreensModule } from './screens/screens.module';
 
 @Module({
-  imports: [AuthModule, CountriesModule, AppsModule, FlowsModule, ScreensModule],
+  imports: [
+    AuthModule,
+    CountriesModule,
+    AppsModule,
+    FlowsModule,
+    ScreensModule,
+  ],
   controllers: [],
   providers: [],
 })

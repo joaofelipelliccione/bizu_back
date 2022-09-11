@@ -22,9 +22,9 @@ export class ScreensController {
   // CADASTRAR TELAS:
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Post('new/:appId')
+  @Post('new/apps/:appId')
   async create(@Param('appId') appId: number, @Body() data: CreateScreenDto[]) {
-    return await this.screensService.create(appId, data);
+    return this.screensService.create(appId, data);
   }
 
   // BUSCAR TODAS AS TELAS:
