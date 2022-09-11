@@ -3,9 +3,8 @@ import { App } from '../../apps/entities/app.entity';
 import { Flow } from '../../flows/entities/flow.entity';
 
 export class CreateScreenDto {
-  print: string;
   flow: number;
-  app: number;
+  print: string[];
 }
 
 export class UpdateScreenDto {
@@ -20,6 +19,9 @@ export class UpdateScreenDto {
   app: App;
 }
 
-export class ScreenDto extends CreateScreenDto {
+export class ScreenDto {
   id: string;
+  print: string;
+  flow: number;
+  app: number;
 }

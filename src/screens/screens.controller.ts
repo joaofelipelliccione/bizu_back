@@ -19,12 +19,12 @@ import { CreateScreenDto, UpdateScreenDto } from './dto/screen.dto';
 export class ScreensController {
   constructor(private readonly screensService: ScreensService) {}
 
-  // CADASTRAR TELA:
+  // CADASTRAR TELAS:
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Post('new')
-  async create(@Body() newScreen: CreateScreenDto[]) {
-    return await this.screensService.create(newScreen);
+  @Post('new/:appId')
+  async create(@Param('appId') appId: number, @Body() data: CreateScreenDto[]) {
+    return await this.screensService.create(appId, data);
   }
 
   // BUSCAR TODAS AS TELAS:

@@ -6,6 +6,7 @@ import { CreateScreenDto, UpdateScreenDto } from './dto/screen.dto';
 import { GenericResponseDto } from '../common/dto/response.dto';
 import { Flow } from '../flows/entities/flow.entity';
 import { App } from '../apps/entities/app.entity';
+import { AppsService } from '../apps/apps.service';
 
 @Injectable()
 export class ScreensService {
@@ -24,88 +25,27 @@ export class ScreensService {
   }
 
   // CADASTRAR TELA:
-  async create(data: CreateScreenDto[]): Promise<GenericResponseDto> {
-    // 1ª PT: Validações de existência:
+  async create(appId: number, data: CreateScreenDto[]): Promise<any> {
     try {
-      await Promise.all(
-        data.map(async ({ print, flow, app }) => {
-          const existentScreen = await this.findOneByScreenPrint(print);
-          if (existentScreen !== null) {
-            throw new Error('Tela já registrada.');
-          }
-
-          const existentFlow = await this.flowRepository.findOneBy({
-            id: flow,
-          });
-          if (existentFlow === null) {
-            throw new Error(
-              'Antes de cadastrar a tela, deve-se registrar o fluxo da qual ela faz parte.',
-            );
-          }
-
-          const existentApp = await this.appRepository.findOneBy({ id: app });
-          if (existentApp === null) {
-            throw new Error(
-              'Antes de cadastrar a tela, deve-se registrar o app da qual ela faz parte.',
-            );
-          }
-        }),
+      const existentApp = await this.appRepository.findOneBy({ id: appId });
+      const existentFlows = await Promise.all(
+        data.map(
+          async ({ flow }) => await this.flowRepository.findOneBy({ id: flow }),
+        ),
       );
+
+      if (existentApp === null || existentFlows.includes(null)) {
+        return {
+          statusCode: 400,
+          message: `Antes de registrar telas, deve-se cadastrar a aplicação e o fluxo da qual elas pertencem.`,
+        };
+      }
     } catch (error) {
       return {
         statusCode: 500,
-        message: `Erro encontrado pré registro de tela - ${error}`,
+        message: `Erro ao verificar existência de aplicativo/fluxo pré registro de telas: ${error}`,
       };
     }
-
-    // 2ª PT: Validações de formato (class-validator):
-    try {
-      await Promise.all(
-        data.map(async ({ print, flow, app }) => {
-          const newScreen = new Screen();
-          newScreen.print = print;
-          newScreen.flow = await this.flowRepository.findOneBy({ id: flow });
-          newScreen.app = await this.appRepository.findOneBy({ id: app });
-
-          const validationErrors = await validate(newScreen);
-          if (validationErrors.length > 0) {
-            throw new Error(Object.values(validationErrors[0].constraints)[0]);
-          }
-        }),
-      );
-    } catch (error) {
-      return {
-        statusCode: 400,
-        message: `${error}`,
-      };
-    }
-
-    // 3ª PT: Salvando no banco:
-    const jf = await Promise.all(
-      data.map(async ({ print, flow, app }) => {
-        const newScreen = new Screen();
-        newScreen.print = print;
-        newScreen.flow = await this.flowRepository.findOneBy({ id: flow });
-        newScreen.app = await this.appRepository.findOneBy({ id: app });
-
-        return await this.screenRepository
-          .save(newScreen)
-          .then(() => {
-            return {
-              statusCode: 201,
-              message: 'Tela registrada com sucesso!!',
-            };
-          })
-          .catch((error) => {
-            return {
-              statusCode: 500,
-              message: `Erro ao registrar tela: ${error}`,
-            };
-          });
-      }),
-    );
-
-    console.log(jf);
   }
 
   // BUSCAR TODAS AS TELAS:
