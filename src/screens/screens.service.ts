@@ -6,7 +6,6 @@ import { CreateScreenDto, UpdateScreenDto } from './dto/screen.dto';
 import { GenericResponseDto } from '../common/dto/response.dto';
 import { Flow } from '../flows/entities/flow.entity';
 import { App } from '../apps/entities/app.entity';
-import { AppsService } from '../apps/apps.service';
 
 @Injectable()
 export class ScreensService {
