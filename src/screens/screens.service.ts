@@ -25,7 +25,7 @@ export class ScreensService {
     private appRepository: Repository<App>,
   ) {}
 
-  // CRIANDO TELAS NA MEMÓRIA
+  // CRIAR TELA(S) NA MEMÓRIA. Utilizado dentro de create():
   async checkFlowAndCreateInMemory(
     app: App,
     flowId: number,
@@ -56,7 +56,7 @@ export class ScreensService {
     return createdScreensArray;
   }
 
-  // CRIANDO TELAS NO BANCO:
+  // CRIAR TELA(S) NO BANCO:
   async create(appId: number, data: CreateScreenDto[]): Promise<any> {
     const existentApp = await this.appRepository.findOneBy({ id: appId });
     if (existentApp === null) {
@@ -65,19 +65,33 @@ export class ScreensService {
       );
     }
 
-    await this.dataSource.transaction(async (transactionalEntityManager) => {
-      const createdScreensArray = await Promise.all(
-        data.map(async ({ flowId, prints }) =>
-          this.checkFlowAndCreateInMemory(existentApp, flowId, prints),
-        ),
-      );
+    return await this.dataSource.transaction(
+      async (transactionalEntityManager) => {
+        const createdScreensArray = await Promise.all(
+          data.map(async ({ flowId, prints }) =>
+            this.checkFlowAndCreateInMemory(existentApp, flowId, prints),
+          ),
+        );
 
-      return Promise.all(
-        createdScreensArray.map((screens) =>
-          transactionalEntityManager.save(screens),
-        ),
-      );
-    });
+        return Promise.all(
+          createdScreensArray.map((screens) =>
+            transactionalEntityManager.save(screens),
+          ),
+        )
+          .then(() => {
+            return {
+              statusCode: 201,
+              message: 'Tela(s) criadas com sucesso!',
+            };
+          })
+          .catch((error) => {
+            return {
+              statusCode: 500,
+              message: `Erro ao criar tela(s): ${error}`,
+            };
+          });
+      },
+    );
   }
 
   // BUSCAR TODAS AS TELAS:
