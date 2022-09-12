@@ -25,57 +25,55 @@ export class ScreensService {
     private appRepository: Repository<App>,
   ) {}
 
-  // COMPLETAR:
-  async createScreen(app: App, flow: Flow, print: string): Promise<Screen> {
-    const existentScreen = await this.screenRepository.findOneBy({
-      print,
-    });
-
-    if (existentScreen) {
-      throw new BadRequestException('A tela já foi cadastrada anteriormente.');
-    }
-
-    return this.screenRepository.create({ app, flow, print });
-  }
-
-  // COMPLETAR:
-  async createScreens(
+  // CRIANDO TELAS NA MEMÓRIA
+  async checkFlowAndCreateInMemory(
     app: App,
     flowId: number,
-    screens: string[],
+    prints: string[],
   ): Promise<Screen[]> {
     const existentFlow = await this.flowRepository.findOneBy({ id: flowId });
     if (existentFlow === null) {
       throw new NotFoundException(
-        'Antes de registrar telas, deve-se cadastrar o fluxo da qual elas pertencem.',
+        'Antes de realizar o registro de telas, deve-se cadastrar o fluxo da qual elas pertencem.',
       );
     }
 
-    return Promise.all(
-      screens.map(async (screen) =>
-        this.createScreen(app, existentFlow, screen),
-      ),
+    const createdScreensArray = await Promise.all(
+      prints.map(async (print) => {
+        const existentScreen = await this.screenRepository.findOneBy({
+          print,
+        });
+        if (existentScreen) {
+          throw new BadRequestException(
+            'A tela já foi cadastrada anteriormente.',
+          );
+        }
+
+        return this.screenRepository.create({ app, flow: existentFlow, print });
+      }),
     );
+
+    return createdScreensArray;
   }
 
-  // CADASTRAR TELAS:
+  // CRIANDO TELAS NO BANCO:
   async create(appId: number, data: CreateScreenDto[]): Promise<any> {
     const existentApp = await this.appRepository.findOneBy({ id: appId });
     if (existentApp === null) {
       throw new NotFoundException(
-        'Antes de registrar telas, deve-se cadastrar a aplicação da qual elas pertencem.',
+        'Antes de realizar o registro de telas, deve-se cadastrar a aplicação da qual elas pertencem.',
       );
     }
 
     await this.dataSource.transaction(async (transactionalEntityManager) => {
-      const createdScreens = await Promise.all(
-        data.map(async ({ flow, prints }) =>
-          this.createScreens(existentApp, flow, prints),
+      const createdScreensArray = await Promise.all(
+        data.map(async ({ flowId, prints }) =>
+          this.checkFlowAndCreateInMemory(existentApp, flowId, prints),
         ),
       );
 
       return Promise.all(
-        createdScreens.map((screens) =>
+        createdScreensArray.map((screens) =>
           transactionalEntityManager.save(screens),
         ),
       );

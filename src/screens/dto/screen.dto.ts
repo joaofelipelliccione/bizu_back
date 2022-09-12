@@ -3,7 +3,7 @@ import { App } from '../../apps/entities/app.entity';
 import { Flow } from '../../flows/entities/flow.entity';
 
 export class CreateScreenDto {
-  flow: number;
+  flowId: number;
   prints: string[];
 }
 
