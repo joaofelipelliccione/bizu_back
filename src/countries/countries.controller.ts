@@ -22,7 +22,7 @@ export class CountriesController {
   // CADASTRAR PAÍS:
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Post('new')
+  @Post()
   async create(@Body() newCountry: CreateCountryDto) {
     return await this.countriesService.create(newCountry);
   }
@@ -30,7 +30,7 @@ export class CountriesController {
   // ATUALIZAR PAÍS:
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Patch('update/:id')
+  @Patch(':id')
   async update(
     @Param('id') id: number,
     @Body() data: Partial<UpdateCountryDto>,
@@ -48,7 +48,7 @@ export class CountriesController {
   // DELETAR PAÍS:
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Delete('remove/:id')
+  @Delete(':id')
   async destroy(@Param('id') id: number) {
     return await this.countriesService.destroy(id);
   }

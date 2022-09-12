@@ -1,4 +1,9 @@
-import { Injectable, Inject } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { validate } from 'class-validator';
 import { Country } from './entities/country.entity';
@@ -19,19 +24,9 @@ export class CountriesService {
 
   // CADASTRAR PAÍS:
   async create(data: CreateCountryDto): Promise<GenericResponseDto> {
-    try {
-      const existentCountry = await this.findOneByCountryName(data.name);
-      if (existentCountry !== null) {
-        return {
-          statusCode: 409,
-          message: `País já registrado.`,
-        };
-      }
-    } catch (error) {
-      return {
-        statusCode: 500,
-        message: `Erro ao verificar existência de país pré registro: ${error}`,
-      };
+    const existentCountry = await this.findOneByCountryName(data.name);
+    if (existentCountry !== null) {
+      throw new ConflictException('País já registrado.');
     }
 
     const newCountry = new Country();
@@ -53,13 +48,13 @@ export class CountriesService {
       .then(() => {
         return {
           statusCode: 201,
-          message: 'País registrado com sucesso!!',
+          message: 'País registrado com sucesso!',
         };
       })
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao registrar país: ${error}`,
+          message: `Erro ao registrar país - ${error}`,
         };
       });
   }
@@ -69,22 +64,12 @@ export class CountriesService {
     countryId: number,
     data: Partial<UpdateCountryDto>,
   ): Promise<GenericResponseDto> {
-    try {
-      const existentCountry = await this.countryRepository.findOneBy({
-        id: countryId,
-      });
+    const existentCountry = await this.countryRepository.findOneBy({
+      id: countryId,
+    });
 
-      if (existentCountry === null) {
-        return {
-          statusCode: 404,
-          message: `País não encontrado :(`,
-        };
-      }
-    } catch (error) {
-      return {
-        statusCode: 500,
-        message: `Erro ao verificar existência de país pré atualização: ${error}`,
-      };
+    if (existentCountry === null) {
+      throw new NotFoundException('País não encontrado :(');
     }
 
     const countryToUpdate = new UpdateCountryDto();
@@ -108,13 +93,13 @@ export class CountriesService {
       .then(() => {
         return {
           statusCode: 200,
-          message: 'País atualizado com sucesso!!',
+          message: 'País atualizado com sucesso!',
         };
       })
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao atualizar país: ${error}`,
+          message: `Erro ao atualizar país - ${error}`,
         };
       });
   }
@@ -127,29 +112,19 @@ export class CountriesService {
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao buscar países: ${error}`,
+          message: `Erro ao buscar países - ${error}`,
         };
       });
   }
 
   // DELETAR PAÍS:
   async destroy(countryId: number): Promise<GenericResponseDto> {
-    try {
-      const existentCountry = await this.countryRepository.findOneBy({
-        id: countryId,
-      });
+    const existentCountry = await this.countryRepository.findOneBy({
+      id: countryId,
+    });
 
-      if (existentCountry === null) {
-        return {
-          statusCode: 404,
-          message: `País não encontrado :(`,
-        };
-      }
-    } catch (error) {
-      return {
-        statusCode: 500,
-        message: `Erro ao verificar existência de país pré deleção: ${error}`,
-      };
+    if (existentCountry === null) {
+      throw new NotFoundException('País não encontrado :(');
     }
 
     return this.countryRepository
@@ -163,7 +138,7 @@ export class CountriesService {
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao remover País: ${error}`,
+          message: `Erro ao remover País - ${error}`,
         };
       });
   }
