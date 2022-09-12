@@ -152,22 +152,12 @@ export class UsersService {
   async destroy(token: string): Promise<GenericResponseDto> {
     const { sub } = this.jwtService.decode(token);
 
-    try {
-      const existentUser = await this.userRepository.findOneBy({
-        id: sub,
-      });
+    const existentUser = await this.userRepository.findOneBy({
+      id: sub,
+    });
 
-      if (existentUser === null) {
-        return {
-          statusCode: 404,
-          message: `Usuário não encontrado :(`,
-        };
-      }
-    } catch (error) {
-      return {
-        statusCode: 500,
-        message: `Erro ao verificar existência de usuário pré deleção: ${error}`,
-      };
+    if (existentUser === null) {
+      throw new NotFoundException('Usuário não encontrado :(');
     }
 
     return this.userRepository

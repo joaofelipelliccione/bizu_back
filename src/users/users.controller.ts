@@ -40,7 +40,7 @@ export class UsersController {
 
   // ATUALIZAR USUÁRIO:
   @UseGuards(JwtAuthGuard) // O endpoint abaixo só será acessado ao enviar um token válido.
-  @Patch('current/update')
+  @Patch('current')
   async update(
     @Headers('Authorization') authorization: string,
     @Body() data: Partial<UpdateUserDto>,
@@ -51,7 +51,7 @@ export class UsersController {
 
   // BUSCAR USUÁRIO POR TOKEN --> id do usuário:
   @UseGuards(JwtAuthGuard)
-  @Get('current/info')
+  @Get('current')
   async findOneByUserToken(@Headers('Authorization') authorization: string) {
     const token = authorization.replace('Bearer ', '');
     return await this.usersService.findOneByUserToken(token);
@@ -59,7 +59,7 @@ export class UsersController {
 
   // DELETAR USUÁRIO:
   @UseGuards(JwtAuthGuard)
-  @Delete('remove')
+  @Delete('current')
   async destroy(@Headers('Authorization') authorization: string) {
     const token = authorization.replace('Bearer ', '');
     return await this.usersService.destroy(token);
