@@ -51,7 +51,7 @@ export class UsersController {
 
   // BUSCAR USUÁRIO POR TOKEN --> id do usuário:
   @UseGuards(JwtAuthGuard)
-  @Get('info')
+  @Get('current/info')
   async findOneByUserToken(@Headers('Authorization') authorization: string) {
     const token = authorization.replace('Bearer ', '');
     return await this.usersService.findOneByUserToken(token);

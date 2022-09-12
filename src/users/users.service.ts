@@ -131,19 +131,21 @@ export class UsersService {
   ): Promise<Partial<User> | GenericResponseDto> {
     const { sub } = this.jwtService.decode(token);
 
-    try {
-      const { id, username, email, profilePicture, role } =
-        await this.userRepository.findOneBy({
-          id: sub,
-        });
+    const existentUser = await this.userRepository.findOneBy({
+      id: sub,
+    });
 
-      return { id, username, email, profilePicture, role };
-    } catch (error) {
-      return {
-        statusCode: 404,
-        message: `Usuário não encontrado :(`,
-      };
+    if (existentUser === null) {
+      throw new NotFoundException('Usuário não encontrado :(');
     }
+
+    return {
+      id: existentUser.id,
+      username: existentUser.username,
+      email: existentUser.email,
+      profilePicture: existentUser.profilePicture,
+      role: existentUser.role,
+    };
   }
 
   // DELETAR USUÁRIO:
