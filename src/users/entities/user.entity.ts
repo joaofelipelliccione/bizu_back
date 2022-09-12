@@ -3,9 +3,11 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
+  ManyToOne,
 } from 'typeorm';
 import { MinLength, IsEmail, Matches } from 'class-validator';
 import { Role } from '../enum/role.enum';
+import { Subscription } from '../../subscriptions/entities/subscription.entity';
 
 @Entity()
 export class User {
@@ -43,4 +45,11 @@ export class User {
 
   @Column({ nullable: true })
   lastSignIn: Date;
+
+  // RELAÇÕES:
+  @ManyToOne(() => Subscription, (subscription) => subscription.users, {
+    nullable: false,
+    eager: true,
+  })
+  subscription!: Subscription;
 }

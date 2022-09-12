@@ -30,6 +30,7 @@ export class AuthService {
       email: user.email,
       username: user.username,
       profilePicture: user.profilePicture,
+      subscription: user.subscription,
       role: user.role,
     };
 

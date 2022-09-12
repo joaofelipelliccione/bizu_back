@@ -1,10 +1,12 @@
 import { MinLength, Matches } from 'class-validator';
+import { Subscription } from '../../subscriptions/entities/subscription.entity';
 import { Role } from '../enum/role.enum';
 
 export class CreateUserDto {
   username: string;
   email: string;
   password: string;
+  subscription: Subscription;
 }
 
 export class UpdateUserDto {
@@ -24,6 +26,8 @@ export class UpdateUserDto {
       'O link da foto de perfil deve apresentar, no mínimo, 8 caracteres.',
   })
   profilePicture: string;
+
+  subscription: Subscription;
 }
 
 export class UserDto extends CreateUserDto {

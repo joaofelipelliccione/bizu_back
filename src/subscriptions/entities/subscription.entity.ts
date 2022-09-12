@@ -1,5 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import { MinLength } from 'class-validator';
+import { User } from '../../users/entities/user.entity';
 
 @Entity()
 export class Subscription {
@@ -19,4 +20,6 @@ export class Subscription {
   durationInMonths: number;
 
   // RELAÇÕES:
+  @OneToMany(() => User, (user) => user.subscription)
+  users: User[];
 }

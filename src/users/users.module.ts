@@ -5,10 +5,16 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { AuthModule } from 'src/auth/auth.module';
 import { JwtService } from '@nestjs/jwt';
+import { subscriptionsProviders } from '../subscriptions/subscriptions.providers';
 
 @Module({
   imports: [DatabaseModule, forwardRef(() => AuthModule)],
-  providers: [...usersProviders, UsersService, JwtService],
+  providers: [
+    ...usersProviders,
+    ...subscriptionsProviders,
+    UsersService,
+    JwtService,
+  ],
   controllers: [UsersController],
   exports: [UsersService],
 })

@@ -10,6 +10,7 @@ import { validate } from 'class-validator';
 import { User } from './entities/user.entity';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { GenericResponseDto } from '../common/dto/response.dto';
+import { Subscription } from 'src/subscriptions/entities/subscription.entity';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -18,6 +19,8 @@ export class UsersService {
     @Inject('USER_REPOSITORY')
     private userRepository: Repository<User>,
     private jwtService: JwtService,
+    @Inject('SUBSCRIPTION_REPOSITORY')
+    private subscriptionRepository: Repository<Subscription>,
   ) {}
 
   // BUSCAR USUÁRIO POR email. Utilizado dentro do service create():
@@ -47,7 +50,12 @@ export class UsersService {
       };
     }
 
+    const freeSubscription = await this.subscriptionRepository.findOneBy({
+      id: 1,
+    });
+
     newUser.password = bcrypt.hashSync(data.password, 8); // Senha criptografada
+    newUser.subscription = freeSubscription;
     return this.userRepository
       .save(newUser)
       .then(() => {
@@ -144,6 +152,7 @@ export class UsersService {
       username: existentUser.username,
       email: existentUser.email,
       profilePicture: existentUser.profilePicture,
+      subscription: existentUser.subscription,
       role: existentUser.role,
     };
   }
