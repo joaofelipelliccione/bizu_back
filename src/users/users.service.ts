@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 import { validate } from 'class-validator';
@@ -22,19 +22,9 @@ export class UsersService {
 
   // CADASTRAR USUÁRIO:
   async create(data: CreateUserDto): Promise<GenericResponseDto> {
-    try {
-      const existentUser = await this.findOneByUserMail(data.email);
-      if (existentUser !== null) {
-        return {
-          statusCode: 409,
-          message: `Usuário já registrado.`,
-        };
-      }
-    } catch (error) {
-      return {
-        statusCode: 500,
-        message: `Erro ao verificar existência de usuário pré registro: ${error}`,
-      };
+    const existentUser = await this.findOneByUserMail(data.email);
+    if (existentUser !== null) {
+      throw new ConflictException('Usuário já registrado.');
     }
 
     const newUser = new User();

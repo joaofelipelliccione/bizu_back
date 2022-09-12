@@ -23,7 +23,7 @@ export class UsersController {
   ) {}
 
   // CADASTRAR USUÁRIO:
-  @Post('new')
+  @Post()
   async create(@Body() newUser: CreateUserDto) {
     return await this.usersService.create(newUser);
   }
