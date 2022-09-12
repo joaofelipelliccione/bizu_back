@@ -27,6 +27,17 @@ export class ScreensController {
     return this.screensService.create(appId, data);
   }
 
+  // ATUALIZAR APP:
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Patch(':id')
+  async update(
+    @Param('id') id: number,
+    @Body() data: Partial<UpdateScreenDto>,
+  ) {
+    return await this.screensService.update(id, data);
+  }
+
   // BUSCAR TODAS AS TELAS:
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Get()

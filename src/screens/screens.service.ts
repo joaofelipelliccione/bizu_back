@@ -98,6 +98,52 @@ export class ScreensService {
     );
   }
 
+  // ATUALIZAR TELA:
+  async update(
+    screenId: number,
+    data: Partial<UpdateScreenDto>,
+  ): Promise<GenericResponseDto> {
+    const existentScreen = await this.screenRepository.findOneBy({
+      id: screenId,
+    });
+    if (existentScreen === null) {
+      throw new NotFoundException('Tela não encontrada :(');
+    }
+
+    const existentApp = await this.appRepository.findOneBy({
+      id: data.appId,
+    });
+    if (existentApp === null) {
+      throw new NotFoundException('Aplicação não encontrada :(');
+    }
+
+    const existentFlow = await this.flowRepository.findOneBy({
+      id: data.flowId,
+    });
+    if (existentFlow === null) {
+      throw new NotFoundException('Fluxo não encontrado :(');
+    }
+
+    return await this.screenRepository
+      .update(screenId, {
+        print: data.print,
+        app: existentApp,
+        flow: existentFlow,
+      })
+      .then(() => {
+        return {
+          statusCode: 200,
+          message: 'Tela atualizada com sucesso!',
+        };
+      })
+      .catch((error) => {
+        return {
+          statusCode: 500,
+          message: `Erro ao atualizar tela - ${error}`,
+        };
+      });
+  }
+
   // BUSCAR TELA POR id:
   async findOneById(screenId: number): Promise<Screen> {
     const existentScreen = await this.screenRepository.findOneBy({
