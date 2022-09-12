@@ -35,10 +35,15 @@ export class UsersService {
       throw new ConflictException('Usuário já registrado.');
     }
 
+    const freeSubscriptionPlan = await this.subscriptionRepository.findOneBy({
+      id: 1,
+    });
+
     const newUser = new User();
     newUser.username = data.username;
     newUser.email = data.email;
     newUser.password = data.password;
+    newUser.subscription = freeSubscriptionPlan;
 
     const validationErrors = await validate(newUser);
     if (validationErrors.length > 0) {
@@ -50,12 +55,7 @@ export class UsersService {
       };
     }
 
-    const freeSubscription = await this.subscriptionRepository.findOneBy({
-      id: 1,
-    });
-
     newUser.password = bcrypt.hashSync(data.password, 8); // Senha criptografada
-    newUser.subscription = freeSubscription;
     return this.userRepository
       .save(newUser)
       .then(() => {
