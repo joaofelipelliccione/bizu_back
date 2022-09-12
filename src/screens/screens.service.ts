@@ -34,7 +34,7 @@ export class ScreensService {
     const existentFlow = await this.flowRepository.findOneBy({ id: flowId });
     if (existentFlow === null) {
       throw new NotFoundException(
-        'Antes de realizar o registro de telas, deve-se cadastrar o fluxo da qual elas pertencem.',
+        'Antes de realizar o registro de tela(s), deve-se cadastrar o fluxo da qual elas pertencem.',
       );
     }
 
@@ -61,7 +61,7 @@ export class ScreensService {
     const existentApp = await this.appRepository.findOneBy({ id: appId });
     if (existentApp === null) {
       throw new NotFoundException(
-        'Antes de realizar o registro de telas, deve-se cadastrar a aplicação da qual elas pertencem.',
+        'Antes de realizar o registro de tela(s), deve-se cadastrar a aplicação da qual ela(s) pertencem.',
       );
     }
 
@@ -164,7 +164,7 @@ export class ScreensService {
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao buscar telas - ${error}`,
+          message: `Erro ao buscar tela(s) - ${error}`,
         };
       });
   }
@@ -181,16 +181,23 @@ export class ScreensService {
 
     return this.screenRepository
       .delete({ app: existentApp })
-      .then(() => {
+      .then((res) => {
+        if (res.affected === 0) {
+          return {
+            statusCode: 400,
+            message: 'A aplicação não apresenta tela(s) cadastrada(s).',
+          };
+        }
+
         return {
           statusCode: 200,
-          message: 'Telas da aplicação removidas com sucesso.',
+          message: 'Tela(s) da aplicação removida(s) com sucesso.',
         };
       })
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao remover telas da aplicação - ${error}`,
+          message: `Erro ao remover tela(s) da aplicação - ${error}`,
         };
       });
   }
