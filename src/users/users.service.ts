@@ -1,4 +1,9 @@
-import { Injectable, Inject, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 import { validate } from 'class-validator';
@@ -72,22 +77,14 @@ export class UsersService {
   ): Promise<GenericResponseDto> {
     const { sub } = this.jwtService.decode(token);
 
-    try {
-      const existentUser = await this.userRepository.findOneBy({
-        id: sub,
-      });
+    const existentUser = await this.userRepository.findOneBy({
+      id: sub,
+    });
 
-      if (existentUser === null) {
-        return {
-          statusCode: 404,
-          message: `Usuário não encontrado :(`,
-        };
-      }
-    } catch (error) {
-      return {
-        statusCode: 500,
-        message: `Erro ao verificar existência de usuário pré atualização: ${error}`,
-      };
+    if (existentUser === null) {
+      throw new NotFoundException(
+        'Impossível atualizar pois usuário não foi encontrado.',
+      );
     }
 
     const userToUpdate = new UpdateUserDto();
@@ -117,7 +114,7 @@ export class UsersService {
       .then(() => {
         return {
           statusCode: 200,
-          message: 'Usuário atualizado com sucesso!!',
+          message: 'Usuário atualizado com sucesso!',
         };
       })
       .catch((error) => {

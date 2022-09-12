@@ -40,7 +40,7 @@ export class UsersController {
 
   // ATUALIZAR USUÁRIO:
   @UseGuards(JwtAuthGuard) // O endpoint abaixo só será acessado ao enviar um token válido.
-  @Patch('update')
+  @Patch('current/update')
   async update(
     @Headers('Authorization') authorization: string,
     @Body() data: Partial<UpdateUserDto>,
