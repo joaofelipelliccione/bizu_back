@@ -33,4 +33,11 @@ export class ScreensController {
   async findAll() {
     return await this.screensService.findAll();
   }
+
+  // BUSCAR TELA POR id:
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get(':id')
+  async findOne(@Param('id') id: number) {
+    return await this.screensService.findOneById(id);
+  }
 }

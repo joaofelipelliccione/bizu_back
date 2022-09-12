@@ -98,6 +98,18 @@ export class ScreensService {
     );
   }
 
+  // BUSCAR TELA POR id:
+  async findOneById(screenId: number): Promise<Screen> {
+    const existentScreen = await this.screenRepository.findOneBy({
+      id: screenId,
+    });
+    if (existentScreen === null) {
+      throw new NotFoundException('Tela não encontrada :(');
+    }
+
+    return existentScreen;
+  }
+
   // BUSCAR TODAS AS TELAS:
   async findAll(): Promise<Screen[] | GenericResponseDto> {
     return this.screenRepository
