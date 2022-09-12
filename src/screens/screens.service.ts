@@ -87,7 +87,7 @@ export class ScreensService {
           .catch((error) => {
             return {
               statusCode: 500,
-              message: `Erro ao criar tela(s): ${error}`,
+              message: `Erro ao criar tela(s) - ${error}`,
             };
           });
       },
@@ -102,7 +102,7 @@ export class ScreensService {
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao buscar telas: ${error}`,
+          message: `Erro ao buscar telas - ${error}`,
         };
       });
   }

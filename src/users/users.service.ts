@@ -59,7 +59,7 @@ export class UsersService {
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao registrar usuário: ${error}`,
+          message: `Erro ao registrar usuário - ${error}`,
         };
       });
   }
@@ -120,7 +120,7 @@ export class UsersService {
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao atualizar usuário: ${error}`,
+          message: `Erro ao atualizar usuário - ${error}`,
         };
       });
   }
@@ -171,7 +171,7 @@ export class UsersService {
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao remover usuário: ${error}`,
+          message: `Erro ao remover usuário - ${error}`,
         };
       });
   }
