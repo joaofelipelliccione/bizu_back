@@ -24,7 +24,7 @@ export class AppsController {
   // CADASTRAR APP:
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Post('new')
+  @Post()
   async create(@Body() newApp: CreateAppDto) {
     return await this.appsService.create(newApp);
   }
@@ -32,7 +32,7 @@ export class AppsController {
   // ATUALIZAR APP:
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Patch('update/:id')
+  @Patch(':id')
   async update(@Param('id') id: number, @Body() data: Partial<UpdateAppDto>) {
     return await this.appsService.update(id, data);
   }
@@ -90,7 +90,7 @@ export class AppsController {
 
   // BUSCAR APPS POR id:
   @UseGuards(JwtAuthGuard)
-  @Get('/:id')
+  @Get(':id')
   async findOneByAppId(@Param('id') id: number) {
     return await this.appsService.findOneByAppId(id);
   }
@@ -98,7 +98,7 @@ export class AppsController {
   // DELETAR APP:
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Delete('remove/:id')
+  @Delete(':id')
   async destroy(@Param('id') id: number) {
     return await this.appsService.destroy(id);
   }

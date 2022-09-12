@@ -1,4 +1,9 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { Repository, Like, In } from 'typeorm';
 import { App } from './entities/app.entity';
 import { Country } from '../countries/entities/country.entity';
@@ -23,29 +28,18 @@ export class AppsService {
 
   // CADASTRAR APP:
   async create(data: CreateAppDto): Promise<GenericResponseDto> {
-    try {
-      const existentApp = await this.findOneByAppName(data.name);
-      if (existentApp !== null) {
-        return {
-          statusCode: 409,
-          message: `Aplicativo já registrado.`,
-        };
-      }
-    } catch (error) {
-      return {
-        statusCode: 500,
-        message: `Erro ao verificar existência de aplicativo pré registro: ${error}`,
-      };
+    const existentApp = await this.findOneByAppName(data.name);
+    if (existentApp !== null) {
+      throw new ConflictException('Aplicativo já registrado.');
     }
 
     const existentCountry = await this.countryRepository.findOneBy({
       id: data.country,
     });
     if (existentCountry === null) {
-      return {
-        statusCode: 400,
-        message: `Antes de cadastrar o app, deve-se registrar seu respectivo país de origem.`,
-      };
+      throw new NotFoundException(
+        'Antes de cadastrar o app, deve-se registrar seu respectivo país de origem.',
+      );
     }
 
     const newApp = new App();
@@ -72,13 +66,13 @@ export class AppsService {
       .then(() => {
         return {
           statusCode: 201,
-          message: 'Aplicativo registrado com sucesso!!',
+          message: 'Aplicativo registrado com sucesso!',
         };
       })
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao registrar aplicativo: ${error}`,
+          message: `Erro ao registrar aplicativo - ${error}`,
         };
       });
   }
@@ -88,22 +82,12 @@ export class AppsService {
     appId: number,
     data: Partial<UpdateAppDto>,
   ): Promise<GenericResponseDto> {
-    try {
-      const existentApp = await this.appRepository.findOneBy({
-        id: appId,
-      });
+    const existentApp = await this.appRepository.findOneBy({
+      id: appId,
+    });
 
-      if (existentApp === null) {
-        return {
-          statusCode: 404,
-          message: `Aplicativo não encontrado :(`,
-        };
-      }
-    } catch (error) {
-      return {
-        statusCode: 500,
-        message: `Erro ao verificar existência de aplicativo pré atualização: ${error}`,
-      };
+    if (existentApp === null) {
+      throw new NotFoundException('Aplicativo não encontrado :(');
     }
 
     const appToUpdate = new UpdateAppDto();
@@ -132,13 +116,13 @@ export class AppsService {
       .then(() => {
         return {
           statusCode: 200,
-          message: 'Aplicativo atualizado com sucesso!!',
+          message: 'Aplicativo atualizado com sucesso!',
         };
       })
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao atualizar aplicativo: ${error}`,
+          message: `Erro ao atualizar aplicativo - ${error}`,
         };
       });
   }
@@ -168,7 +152,7 @@ export class AppsService {
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao buscar aplicativos: ${error}`,
+          message: `Erro ao buscar aplicativos - ${error}`,
         };
       });
   }
@@ -187,7 +171,7 @@ export class AppsService {
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao buscar aplicativos através de pesquisa por nome: ${error}`,
+          message: `Erro ao buscar aplicativos através de pesquisa por nome - ${error}`,
         };
       });
   }
@@ -213,7 +197,7 @@ export class AppsService {
         .catch((error) => {
           return {
             statusCode: 500,
-            message: `Erro ao buscar aplicação utilizando filtro de categoria e país: ${error}`,
+            message: `Erro ao buscar aplicação utilizando filtro de categoria e país - ${error}`,
           };
         });
     }
@@ -230,7 +214,7 @@ export class AppsService {
         .catch((error) => {
           return {
             statusCode: 500,
-            message: `Erro ao buscar aplicação utilizando filtro de categoria: ${error}`,
+            message: `Erro ao buscar aplicação utilizando filtro de categoria - ${error}`,
           };
         });
     }
@@ -249,7 +233,7 @@ export class AppsService {
         .catch((error) => {
           return {
             statusCode: 500,
-            message: `Erro ao buscar aplicação utilizando filtro de país: ${error}`,
+            message: `Erro ao buscar aplicação utilizando filtro de país - ${error}`,
           };
         });
     }
@@ -257,22 +241,12 @@ export class AppsService {
 
   // DELETAR APP:
   async destroy(appId: number): Promise<GenericResponseDto> {
-    try {
-      const existentApp = await this.appRepository.findOneBy({
-        id: appId,
-      });
+    const existentApp = await this.appRepository.findOneBy({
+      id: appId,
+    });
 
-      if (existentApp === null) {
-        return {
-          statusCode: 404,
-          message: `Aplicativo não encontrado :(`,
-        };
-      }
-    } catch (error) {
-      return {
-        statusCode: 500,
-        message: `Erro ao verificar existência de aplicativo pré deleção: ${error}`,
-      };
+    if (existentApp === null) {
+      throw new NotFoundException('Aplicativo não encontrado :(');
     }
 
     return this.appRepository
@@ -286,7 +260,7 @@ export class AppsService {
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao remover aplicativo: ${error}`,
+          message: `Erro ao remover aplicativo - ${error}`,
         };
       });
   }
