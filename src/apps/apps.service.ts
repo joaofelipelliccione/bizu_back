@@ -145,15 +145,15 @@ export class AppsService {
 
   // BUSCAR APP POR id:
   async findOneByAppId(appId: number): Promise<App> {
-    const app = await this.appRepository.findOneBy({
+    const existentApp = await this.appRepository.findOneBy({
       id: appId,
     });
 
-    if (app === null) {
+    if (existentApp === null) {
       throw new NotFoundException('Aplicativo não encontrado :(');
     }
 
-    return app;
+    return existentApp;
   }
 
   // BUSCAR TODOS OS APPS POR PLATAFORMA:
