@@ -24,7 +24,7 @@ export class App {
 
   @Column('varchar', { nullable: false, length: 20 })
   @MinLength(1, {
-    message: 'O nome do aplicativo deve possuir, no mínimo, 1 caractere.',
+    message: 'O nome da aplicação deve possuir, no mínimo, 1 caractere.',
   })
   name!: string;
 
@@ -36,7 +36,7 @@ export class App {
 
   @Column('varchar', { nullable: false, length: 60 })
   @MinLength(3, {
-    message: 'O slogan do aplicativo deve possuir, no mínimo, 3 caracteres.',
+    message: 'O slogan da aplicação deve possuir, no mínimo, 3 caracteres.',
   })
   slogan!: string;
 
@@ -48,7 +48,7 @@ export class App {
 
   @Column('varchar', { nullable: false, length: 40 })
   @MinLength(3, {
-    message: 'O categoria do aplicativo deve possuir, no mínimo, 3 caracteres.',
+    message: 'O categoria da aplicação deve possuir, no mínimo, 3 caracteres.',
   })
   category!: string;
 

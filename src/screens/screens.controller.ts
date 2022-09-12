@@ -40,4 +40,12 @@ export class ScreensController {
   async findOne(@Param('id') id: number) {
     return await this.screensService.findOneById(id);
   }
+
+  // DELETAR TODAS AS TELAS DE UM APP:
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Delete('apps/:appId')
+  async destroy(@Param('appId') appId: number) {
+    return await this.screensService.destroy(appId);
+  }
 }

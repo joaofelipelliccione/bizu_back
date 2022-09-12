@@ -122,4 +122,30 @@ export class ScreensService {
         };
       });
   }
+
+  // DELETAR TODAS AS TELAS DE UM APP:
+  async destroy(appId: number): Promise<GenericResponseDto> {
+    const existentApp = await this.appRepository.findOneBy({
+      id: appId,
+    });
+
+    if (existentApp === null) {
+      throw new NotFoundException('Aplicação não encontrada :(');
+    }
+
+    return this.screenRepository
+      .delete({ app: existentApp })
+      .then(() => {
+        return {
+          statusCode: 200,
+          message: 'Telas da aplicação removidas com sucesso.',
+        };
+      })
+      .catch((error) => {
+        return {
+          statusCode: 500,
+          message: `Erro ao remover telas da aplicação - ${error}`,
+        };
+      });
+  }
 }

@@ -53,7 +53,7 @@ export class UsersService {
       .then(() => {
         return {
           statusCode: 201,
-          message: 'Usuário registrado com sucesso!!',
+          message: 'Usuário registrado com sucesso!',
         };
       })
       .catch((error) => {

@@ -30,7 +30,7 @@ export class AppsService {
   async create(data: CreateAppDto): Promise<GenericResponseDto> {
     const existentApp = await this.findOneByAppName(data.name);
     if (existentApp !== null) {
-      throw new ConflictException('Aplicativo já registrado.');
+      throw new ConflictException('Aplicação já registrada.');
     }
 
     const existentCountry = await this.countryRepository.findOneBy({
@@ -66,13 +66,13 @@ export class AppsService {
       .then(() => {
         return {
           statusCode: 201,
-          message: 'Aplicativo registrado com sucesso!',
+          message: 'Aplicação registrada com sucesso!',
         };
       })
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao registrar aplicativo - ${error}`,
+          message: `Erro ao registrar aplicação - ${error}`,
         };
       });
   }
@@ -87,7 +87,7 @@ export class AppsService {
     });
 
     if (existentApp === null) {
-      throw new NotFoundException('Aplicativo não encontrado :(');
+      throw new NotFoundException('Aplicação não encontrada :(');
     }
 
     const appToUpdate = new UpdateAppDto();
@@ -116,13 +116,13 @@ export class AppsService {
       .then(() => {
         return {
           statusCode: 200,
-          message: 'Aplicativo atualizado com sucesso!',
+          message: 'Aplicação atualizada com sucesso!',
         };
       })
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao atualizar aplicativo - ${error}`,
+          message: `Erro ao atualizar aplicação - ${error}`,
         };
       });
   }
@@ -134,7 +134,7 @@ export class AppsService {
     });
 
     if (existentApp === null) {
-      throw new NotFoundException('Aplicativo não encontrado :(');
+      throw new NotFoundException('Aplicação não encontrada :(');
     }
 
     return existentApp;
@@ -152,7 +152,7 @@ export class AppsService {
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao buscar aplicativos - ${error}`,
+          message: `Erro ao buscar aplicações - ${error}`,
         };
       });
   }
@@ -171,7 +171,7 @@ export class AppsService {
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao buscar aplicativos através de pesquisa por nome - ${error}`,
+          message: `Erro ao buscar aplicações através de pesquisa por nome - ${error}`,
         };
       });
   }
@@ -246,7 +246,7 @@ export class AppsService {
     });
 
     if (existentApp === null) {
-      throw new NotFoundException('Aplicativo não encontrado :(');
+      throw new NotFoundException('Aplicação não encontrada :(');
     }
 
     return this.appRepository
@@ -254,13 +254,13 @@ export class AppsService {
       .then(() => {
         return {
           statusCode: 200,
-          message: 'Aplicativo removido com sucesso.',
+          message: 'Aplicação removida com sucesso.',
         };
       })
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao remover aplicativo - ${error}`,
+          message: `Erro ao remover aplicação - ${error}`,
         };
       });
   }
