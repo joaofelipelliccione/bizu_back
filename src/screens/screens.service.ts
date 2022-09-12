@@ -79,6 +79,10 @@ export class ScreensService {
           ),
         )
           .then(() => {
+            this.appRepository.update(appId, {
+              lastUpdate: () => 'NOW()',
+            });
+
             return {
               statusCode: 201,
               message: 'Tela(s) criadas com sucesso!',
