@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { Repository, Like, In } from 'typeorm';
 import { App } from './entities/app.entity';
 import { Country } from '../countries/entities/country.entity';
@@ -144,27 +144,16 @@ export class AppsService {
   }
 
   // BUSCAR APP POR id:
-  async findOneByAppId(appId: number): Promise<App | GenericResponseDto> {
-    return this.appRepository
-      .findOneBy({
-        id: appId,
-      })
-      .then((existentApp) => {
-        if (existentApp === null) {
-          return {
-            statusCode: 404,
-            message: `Aplicativo não encontrado :(`,
-          };
-        }
+  async findOneByAppId(appId: number): Promise<App> {
+    const app = await this.appRepository.findOneBy({
+      id: appId,
+    });
 
-        return existentApp;
-      })
-      .catch((error) => {
-        return {
-          statusCode: 500,
-          message: `Erro ao buscar aplicativo: ${error}`,
-        };
-      });
+    if (app === null) {
+      throw new NotFoundException('Aplicativo não encontrado :(');
+    }
+
+    return app;
   }
 
   // BUSCAR TODOS OS APPS POR PLATAFORMA:

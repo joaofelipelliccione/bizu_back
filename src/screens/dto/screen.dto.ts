@@ -4,7 +4,7 @@ import { Flow } from '../../flows/entities/flow.entity';
 
 export class CreateScreenDto {
   flow: number;
-  print: string[];
+  prints: string[];
 }
 
 export class UpdateScreenDto {

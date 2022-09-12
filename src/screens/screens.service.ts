@@ -1,5 +1,10 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import {
+  Injectable,
+  Inject,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
+import { DataSource, Repository } from 'typeorm';
 import { validate } from 'class-validator';
 import { Screen } from './entities/screen.entity';
 import { CreateScreenDto, UpdateScreenDto } from './dto/screen.dto';
@@ -10,6 +15,8 @@ import { App } from '../apps/entities/app.entity';
 @Injectable()
 export class ScreensService {
   constructor(
+    @Inject('DATA_SOURCE')
+    private dataSource: DataSource,
     @Inject('SCREEN_REPOSITORY')
     private screenRepository: Repository<Screen>,
     @Inject('FLOW_REPOSITORY')
@@ -18,33 +25,61 @@ export class ScreensService {
     private appRepository: Repository<App>,
   ) {}
 
-  // BUSCAR TELA POR print. Utilizado dentro do service create():
-  async findOneByScreenPrint(screenPrint: string): Promise<Screen | null> {
-    return await this.screenRepository.findOneBy({ print: screenPrint });
+  // COMPLETAR:
+  async createScreen(app: App, flow: Flow, print: string): Promise<Screen> {
+    const existentScreen = await this.screenRepository.findOneBy({
+      print,
+    });
+
+    if (existentScreen) {
+      throw new BadRequestException('A tela já foi cadastrada anteriormente.');
+    }
+
+    return this.screenRepository.create({ app, flow, print });
   }
 
-  // CADASTRAR TELA:
+  // COMPLETAR:
+  async createScreens(
+    app: App,
+    flowId: number,
+    screens: string[],
+  ): Promise<Screen[]> {
+    const existentFlow = await this.flowRepository.findOneBy({ id: flowId });
+    if (existentFlow === null) {
+      throw new NotFoundException(
+        'Antes de registrar telas, deve-se cadastrar o fluxo da qual elas pertencem.',
+      );
+    }
+
+    return Promise.all(
+      screens.map(async (screen) =>
+        this.createScreen(app, existentFlow, screen),
+      ),
+    );
+  }
+
+  // CADASTRAR TELAS:
   async create(appId: number, data: CreateScreenDto[]): Promise<any> {
-    try {
-      const existentApp = await this.appRepository.findOneBy({ id: appId });
-      const existentFlows = await Promise.all(
-        data.map(
-          async ({ flow }) => await this.flowRepository.findOneBy({ id: flow }),
+    const existentApp = await this.appRepository.findOneBy({ id: appId });
+    if (existentApp === null) {
+      throw new NotFoundException(
+        'Antes de registrar telas, deve-se cadastrar a aplicação da qual elas pertencem.',
+      );
+    }
+
+    await this.dataSource.transaction(async (transactionalEntityManager) => {
+      const createdScreens = await Promise.all(
+        data.map(async ({ flow, prints }) =>
+          this.createScreens(existentApp, flow, prints),
         ),
       );
 
-      if (existentApp === null || existentFlows.includes(null)) {
-        return {
-          statusCode: 400,
-          message: `Antes de registrar telas, deve-se cadastrar a aplicação e o fluxo da qual elas pertencem.`,
-        };
-      }
-    } catch (error) {
-      return {
-        statusCode: 500,
-        message: `Erro ao verificar existência de aplicativo/fluxo pré registro de telas: ${error}`,
-      };
-    }
+      return Promise.all(
+        createdScreens.map((screens) =>
+          transactionalEntityManager.save(screens),
+        ),
+      );
+    });
   }
 
   // BUSCAR TODAS AS TELAS:
