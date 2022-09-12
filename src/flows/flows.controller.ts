@@ -22,7 +22,7 @@ export class FlowsController {
   // CADASTRAR FLUXO:
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Post('new')
+  @Post()
   async create(@Body() newCountry: CreateFlowDto) {
     return await this.flowsService.create(newCountry);
   }
@@ -30,7 +30,7 @@ export class FlowsController {
   // ATUALIZAR FLUXO:
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Patch('update/:id')
+  @Patch(':id')
   async update(@Param('id') id: number, @Body() data: Partial<UpdateFlowDto>) {
     return await this.flowsService.update(id, data);
   }
@@ -45,7 +45,7 @@ export class FlowsController {
   // DELETAR FLUXO:
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Delete('remove/:id')
+  @Delete(':id')
   async destroy(@Param('id') id: number) {
     return await this.flowsService.destroy(id);
   }

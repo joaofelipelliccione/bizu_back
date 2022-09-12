@@ -1,4 +1,9 @@
-import { Injectable, Inject } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { validate } from 'class-validator';
 import { Flow } from './entities/flow.entity';
@@ -19,19 +24,9 @@ export class FlowsService {
 
   // CADASTRAR FLUXO:
   async create(data: CreateFlowDto): Promise<GenericResponseDto> {
-    try {
-      const existentFlow = await this.findOneByFlowName(data.name);
-      if (existentFlow !== null) {
-        return {
-          statusCode: 409,
-          message: `Fluxo já registrado.`,
-        };
-      }
-    } catch (error) {
-      return {
-        statusCode: 500,
-        message: `Erro ao verificar existência de fluxo pré registro: ${error}`,
-      };
+    const existentFlow = await this.findOneByFlowName(data.name);
+    if (existentFlow !== null) {
+      throw new ConflictException('Fluxo já registrado.');
     }
 
     const newFlow = new Flow();
@@ -53,13 +48,13 @@ export class FlowsService {
       .then(() => {
         return {
           statusCode: 201,
-          message: 'Fluxo registrado com sucesso!!',
+          message: 'Fluxo registrado com sucesso!',
         };
       })
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao registrar fluxo: ${error}`,
+          message: `Erro ao registrar fluxo - ${error}`,
         };
       });
   }
@@ -69,22 +64,12 @@ export class FlowsService {
     flowId: number,
     data: Partial<UpdateFlowDto>,
   ): Promise<GenericResponseDto> {
-    try {
-      const existentFlow = await this.flowRepository.findOneBy({
-        id: flowId,
-      });
+    const existentFlow = await this.flowRepository.findOneBy({
+      id: flowId,
+    });
 
-      if (existentFlow === null) {
-        return {
-          statusCode: 404,
-          message: `Fluxo não encontrado :(`,
-        };
-      }
-    } catch (error) {
-      return {
-        statusCode: 500,
-        message: `Erro ao verificar existência de fluxo pré atualização: ${error}`,
-      };
+    if (existentFlow === null) {
+      throw new NotFoundException('Fluxo não encontrado :(');
     }
 
     const flowToUpdate = new UpdateFlowDto();
@@ -108,13 +93,13 @@ export class FlowsService {
       .then(() => {
         return {
           statusCode: 200,
-          message: 'Fluxo atualizado com sucesso!!',
+          message: 'Fluxo atualizado com sucesso!',
         };
       })
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao atualizar fluxo: ${error}`,
+          message: `Erro ao atualizar fluxo - ${error}`,
         };
       });
   }
@@ -127,29 +112,19 @@ export class FlowsService {
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao buscar fluxos: ${error}`,
+          message: `Erro ao buscar fluxos - ${error}`,
         };
       });
   }
 
   // DELETAR FLUXO:
   async destroy(flowId: number): Promise<GenericResponseDto> {
-    try {
-      const existentFlow = await this.flowRepository.findOneBy({
-        id: flowId,
-      });
+    const existentFlow = await this.flowRepository.findOneBy({
+      id: flowId,
+    });
 
-      if (existentFlow === null) {
-        return {
-          statusCode: 404,
-          message: `Fluxo não encontrado :(`,
-        };
-      }
-    } catch (error) {
-      return {
-        statusCode: 500,
-        message: `Erro ao verificar existência de fluxo pré deleção: ${error}`,
-      };
+    if (existentFlow === null) {
+      throw new NotFoundException('Fluxo não encontrado :(');
     }
 
     return this.flowRepository
@@ -163,7 +138,7 @@ export class FlowsService {
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao remover Fluxo: ${error}`,
+          message: `Erro ao remover Fluxo - ${error}`,
         };
       });
   }
