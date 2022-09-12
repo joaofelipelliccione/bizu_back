@@ -4,6 +4,7 @@ import { CountriesModule } from './countries/countries.module';
 import { AppsModule } from './apps/apps.module';
 import { FlowsModule } from './flows/flows.module';
 import { ScreensModule } from './screens/screens.module';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { ScreensModule } from './screens/screens.module';
     AppsModule,
     FlowsModule,
     ScreensModule,
+    SubscriptionsModule,
   ],
   controllers: [],
   providers: [],
