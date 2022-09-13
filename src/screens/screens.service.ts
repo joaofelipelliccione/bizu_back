@@ -110,26 +110,25 @@ export class ScreensService {
       throw new NotFoundException('Tela não encontrada :(');
     }
 
-    const existentApp = await this.appRepository.findOneBy({
-      id: data.appId,
-    });
-    if (existentApp === null) {
-      throw new NotFoundException('Aplicação não encontrada :(');
-    }
+    const screenToUpdate = new UpdateScreenDto();
+    screenToUpdate.app = data.app;
+    screenToUpdate.flow = data.flow;
+    screenToUpdate.print = data.print;
 
-    const existentFlow = await this.flowRepository.findOneBy({
-      id: data.flowId,
+    const validationErrors = await validate(screenToUpdate, {
+      skipMissingProperties: true,
     });
-    if (existentFlow === null) {
-      throw new NotFoundException('Fluxo não encontrado :(');
+    if (validationErrors.length > 0) {
+      return {
+        statusCode: 400,
+        message: `Erro de validação: ${
+          Object.values(validationErrors[0].constraints)[0]
+        }`,
+      };
     }
 
     return await this.screenRepository
-      .update(screenId, {
-        print: data.print,
-        app: existentApp,
-        flow: existentFlow,
-      })
+      .update(screenId, screenToUpdate)
       .then(() => {
         return {
           statusCode: 200,

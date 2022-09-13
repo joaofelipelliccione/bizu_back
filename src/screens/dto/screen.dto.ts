@@ -1,4 +1,6 @@
 import { MinLength } from 'class-validator';
+import { App } from '../../apps/entities/app.entity';
+import { Flow } from '../../flows/entities/flow.entity';
 
 export class CreateScreenDto {
   flowId: number;
@@ -12,9 +14,9 @@ export class UpdateScreenDto {
   })
   print: string;
 
-  flowId: number;
+  flow: Flow;
 
-  appId: number;
+  app: App;
 }
 
 export class ScreenDto {
