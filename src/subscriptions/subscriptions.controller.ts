@@ -22,11 +22,22 @@ import {
 export class SubscriptionsController {
   constructor(private readonly subscriptionsService: SubscriptionsService) {}
 
-  // CRIAR ASSINATURA:
+  // CRIAR PLANO DE ASSINATURA:
   @Roles(Role.ADMIN)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post()
   async create(@Body() newSubscription: CreateSubscriptionDto) {
     return await this.subscriptionsService.create(newSubscription);
+  }
+
+  // ATUALIZAR PLANO DE ASSINATURA:
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Patch(':id')
+  async update(
+    @Param('id') id: number,
+    @Body() data: Partial<UpdateSubscriptionDto>,
+  ) {
+    return await this.subscriptionsService.update(id, data);
   }
 }
