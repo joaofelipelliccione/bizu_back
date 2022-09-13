@@ -127,4 +127,31 @@ export class SubscriptionsService {
         };
       });
   }
+
+  // DELETAR PLANO DE ASSINATURA:
+  async destroy(subscriptionId: number): Promise<GenericResponseDto> {
+    const existentSubscriptionPlan =
+      await this.subscriptionRepository.findOneBy({
+        id: subscriptionId,
+      });
+
+    if (existentSubscriptionPlan === null) {
+      throw new NotFoundException('Plano de assinatura não encontrado :(');
+    }
+
+    return this.subscriptionRepository
+      .delete({ id: subscriptionId })
+      .then(() => {
+        return {
+          statusCode: 200,
+          message: 'Plano de assinatura removido com sucesso.',
+        };
+      })
+      .catch((error) => {
+        return {
+          statusCode: 500,
+          message: `Erro ao remover plano de assinatura - ${error}`,
+        };
+      });
+  }
 }

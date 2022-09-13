@@ -138,7 +138,7 @@ export class FlowsService {
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao remover Fluxo - ${error}`,
+          message: `Erro ao remover fluxo - ${error}`,
         };
       });
   }

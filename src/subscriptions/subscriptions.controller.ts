@@ -47,4 +47,12 @@ export class SubscriptionsController {
   async findAll() {
     return await this.subscriptionsService.findAll();
   }
+
+  // DELETAR PLANO DE ASSINATURA:
+  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Delete(':id')
+  async destroy(@Param('id') id: number) {
+    return await this.subscriptionsService.destroy(id);
+  }
 }
