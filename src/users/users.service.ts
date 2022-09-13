@@ -99,6 +99,7 @@ export class UsersService {
     userToUpdate.username = data.username;
     userToUpdate.password = data.password;
     userToUpdate.profilePicture = data.profilePicture;
+    userToUpdate.subscription = data.subscription;
 
     const validationErrors = await validate(userToUpdate, {
       skipMissingProperties: true,
