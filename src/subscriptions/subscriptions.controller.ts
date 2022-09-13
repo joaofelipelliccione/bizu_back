@@ -40,4 +40,11 @@ export class SubscriptionsController {
   ) {
     return await this.subscriptionsService.update(id, data);
   }
+
+  // BUSCAR TODOS OS PLANOS DE ASSINATURA:
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Get()
+  async findAll() {
+    return await this.subscriptionsService.findAll();
+  }
 }

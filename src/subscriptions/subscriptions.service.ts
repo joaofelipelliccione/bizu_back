@@ -114,4 +114,17 @@ export class SubscriptionsService {
         };
       });
   }
+
+  // BUSCAR TODOS OS PLANOS DE ASSINATURA:
+  async findAll(): Promise<Subscription[] | GenericResponseDto> {
+    return this.subscriptionRepository
+      .find()
+      .then((subscription) => subscription)
+      .catch((error) => {
+        return {
+          statusCode: 500,
+          message: `Erro ao buscar planos de assinatura - ${error}`,
+        };
+      });
+  }
 }
