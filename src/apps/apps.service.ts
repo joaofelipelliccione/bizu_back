@@ -209,6 +209,8 @@ export class AppsService {
     appPlatform: Platform,
     queryObj: Partial<AppQueryDto>,
   ): Promise<App[] | GenericResponseDto> {
+    const PER_PAGE = 3;
+
     if (queryObj.category && queryObj.country) {
       const categoriesArray = queryObj.category.split('_');
       const countriesArray = queryObj.country
@@ -216,10 +218,13 @@ export class AppsService {
         .map((element) => Number(element));
 
       return this.appRepository
-        .findBy({
-          platform: appPlatform,
-          category: In(categoriesArray),
-          country: { id: In(countriesArray) },
+        .find({
+          where: {
+            platform: appPlatform,
+            category: In(categoriesArray),
+            country: { id: In(countriesArray) },
+          },
+          take: PER_PAGE,
         })
         .then((apps) => apps)
         .catch((error) => {
@@ -234,9 +239,9 @@ export class AppsService {
       const categoriesArray = queryObj.category.split('_');
 
       return this.appRepository
-        .findBy({
-          platform: appPlatform,
-          category: In(categoriesArray),
+        .find({
+          where: { platform: appPlatform, category: In(categoriesArray) },
+          take: PER_PAGE,
         })
         .then((apps) => apps)
         .catch((error) => {
@@ -253,9 +258,9 @@ export class AppsService {
         .map((element) => Number(element));
 
       return this.appRepository
-        .findBy({
-          platform: appPlatform,
-          country: { id: In(countriesArray) },
+        .find({
+          where: { platform: appPlatform, country: { id: In(countriesArray) } },
+          take: PER_PAGE,
         })
         .then((apps) => apps)
         .catch((error) => {
