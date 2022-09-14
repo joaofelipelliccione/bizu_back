@@ -9,8 +9,14 @@ import { App } from './entities/app.entity';
 import { Country } from '../countries/entities/country.entity';
 import { validate } from 'class-validator';
 import { Platform } from './enum/platform.enum';
-import { CreateAppDto, UpdateAppDto, AppQueryDto } from './dto/app.dto';
+import {
+  CreateAppDto,
+  UpdateAppDto,
+  AppQueryDto,
+  PaginatedAppsResultDto,
+} from './dto/app.dto';
 import { GenericResponseDto } from '../common/dto/response.dto';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 @Injectable()
 export class AppsService {
@@ -143,12 +149,30 @@ export class AppsService {
   // BUSCAR TODOS OS APPS POR PLATAFORMA:
   async findAllByAppPlatform(
     appPlatform: Platform,
-  ): Promise<App[] | GenericResponseDto> {
+    queryObj: PaginationDto,
+  ): Promise<PaginatedAppsResultDto | GenericResponseDto> {
+    const PER_PAGE = 2;
+    const page = Number(queryObj.page) || 1;
+    const appsToSkip = (page - 1) * PER_PAGE;
+    const totalApps = await this.appRepository.count({
+      where: { platform: appPlatform },
+    });
+
     return this.appRepository
-      .findBy({
-        platform: appPlatform,
+      .find({
+        where: { platform: appPlatform },
+        order: { lastUpdate: 'DESC', createdAt: 'DESC' },
+        take: PER_PAGE,
+        skip: appsToSkip,
       })
-      .then((apps) => apps)
+      .then((apps) => {
+        return {
+          data: apps,
+          page,
+          appsPerPage: PER_PAGE,
+          totalApps,
+        };
+      })
       .catch((error) => {
         return {
           statusCode: 500,

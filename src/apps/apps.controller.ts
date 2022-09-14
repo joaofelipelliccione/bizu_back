@@ -16,6 +16,7 @@ import { Role } from 'src/users/enum/role.enum';
 import { AppsService } from './apps.service';
 import { Platform } from './enum/platform.enum';
 import { CreateAppDto, UpdateAppDto, AppQueryDto } from './dto/app.dto';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 @Controller('apps')
 export class AppsController {
@@ -40,15 +41,21 @@ export class AppsController {
   // BUSCAR TODOS OS APPS MOBILE:
   @UseGuards(JwtAuthGuard)
   @Get('mobile')
-  async findAllMobileApps() {
-    return await this.appsService.findAllByAppPlatform(Platform.MOBILE);
+  async findAllMobileApps(@Query() queryParams: PaginationDto) {
+    return await this.appsService.findAllByAppPlatform(
+      Platform.MOBILE,
+      queryParams,
+    );
   }
 
   // BUSCAR TODOS OS APPS WEB:
   @UseGuards(JwtAuthGuard)
   @Get('web')
-  async findAllWebApps() {
-    return await this.appsService.findAllByAppPlatform(Platform.WEB);
+  async findAllWebApps(@Query() queryParams: PaginationDto) {
+    return await this.appsService.findAllByAppPlatform(
+      Platform.WEB,
+      queryParams,
+    );
   }
 
   // BUSCAR APPS MOBILE POR PESQUISA LIKE %appName%:
