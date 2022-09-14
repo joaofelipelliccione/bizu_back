@@ -188,10 +188,12 @@ export class AppsService {
     appPlatform: Platform,
     queryObj: AppQueryDto,
   ): Promise<App[] | GenericResponseDto> {
+    const PER_PAGE = 3;
+
     return this.appRepository
-      .findBy({
-        platform: appPlatform,
-        name: Like(`%${queryObj.name}%`),
+      .find({
+        where: { platform: appPlatform, name: Like(`%${queryObj.name}%`) },
+        take: PER_PAGE,
       })
       .then((apps) => apps)
       .catch((error) => {
