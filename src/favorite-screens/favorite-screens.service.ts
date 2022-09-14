@@ -62,4 +62,40 @@ export class FavoriteScreensService {
         };
       });
   }
+
+  // DESFAVORITAR TELA:
+  async destroy(token: string, screenId: number): Promise<GenericResponseDto> {
+    const { sub } = this.jwtService.decode(token);
+
+    const existentUser = await this.userRepository.findOneBy({
+      id: sub,
+    });
+
+    if (existentUser === null) {
+      throw new NotFoundException('Usuário não encontrado :(');
+    }
+
+    const favoriteScreen = await this.favoriteScreenRepository.findOne({
+      where: { user: { id: sub }, screen: { id: screenId } },
+    });
+
+    if (favoriteScreen === null) {
+      throw new NotFoundException('O Usuário não favoritou a respectiva tela.');
+    }
+
+    return this.favoriteScreenRepository
+      .delete(favoriteScreen.id)
+      .then(() => {
+        return {
+          statusCode: 200,
+          message: 'Tela desfavoritada com sucesso.',
+        };
+      })
+      .catch((error) => {
+        return {
+          statusCode: 500,
+          message: `Erro ao desfavoritar tela - ${error}`,
+        };
+      });
+  }
 }
