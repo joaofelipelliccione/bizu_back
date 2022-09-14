@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Screen } from '../../screens/entities/screen.entity';
 
@@ -8,8 +14,9 @@ export class FavoriteScreen {
   id!: number;
 
   // RELAÇÕES:
-  @OneToOne(() => User)
-  @JoinColumn()
+  @ManyToOne(() => User, (user) => user.favoriteScreens, {
+    nullable: false,
+  })
   user: User;
 
   @OneToOne(() => Screen)

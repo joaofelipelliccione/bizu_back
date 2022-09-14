@@ -4,10 +4,12 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { MinLength, IsEmail, Matches } from 'class-validator';
 import { Role } from '../enum/role.enum';
 import { Subscription } from '../../subscriptions/entities/subscription.entity';
+import { FavoriteScreen } from '../../favorite-screens/entities/favorite-screen.entity';
 
 @Entity()
 export class User {
@@ -52,4 +54,10 @@ export class User {
     eager: true,
   })
   subscription!: Subscription;
+
+  @OneToMany(() => FavoriteScreen, (favoriteScreen) => favoriteScreen.user, {
+    nullable: false,
+    eager: true,
+  })
+  favoriteScreens!: FavoriteScreen[];
 }
