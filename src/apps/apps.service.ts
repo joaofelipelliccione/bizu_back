@@ -208,14 +208,25 @@ export class AppsService {
   async findAllAppsByQuery(
     appPlatform: Platform,
     queryObj: Partial<AppQueryDto>,
-  ): Promise<App[] | GenericResponseDto> {
+  ): Promise<PaginatedAppsResultDto | GenericResponseDto> {
     const PER_PAGE = 3;
+    const page = Number(queryObj.page) || 1;
+    const appsToSkip = (page - 1) * PER_PAGE;
 
     if (queryObj.category && queryObj.country) {
       const categoriesArray = queryObj.category.split('_');
       const countriesArray = queryObj.country
         .split('_')
         .map((element) => Number(element));
+
+      const totalApps = await this.appRepository.count({
+        where: {
+          platform: appPlatform,
+          category: In(categoriesArray),
+          country: { id: In(countriesArray) },
+        },
+      });
+      const hasNextPage = PER_PAGE * page < totalApps;
 
       return this.appRepository
         .find({
@@ -224,9 +235,19 @@ export class AppsService {
             category: In(categoriesArray),
             country: { id: In(countriesArray) },
           },
+          order: { lastUpdate: 'DESC', createdAt: 'DESC' },
           take: PER_PAGE,
+          skip: appsToSkip,
         })
-        .then((apps) => apps)
+        .then((apps) => {
+          return {
+            data: apps,
+            page,
+            appsPerPage: apps.length,
+            totalApps,
+            hasNextPage,
+          };
+        })
         .catch((error) => {
           return {
             statusCode: 500,
@@ -238,12 +259,30 @@ export class AppsService {
     if (queryObj.category) {
       const categoriesArray = queryObj.category.split('_');
 
+      const totalApps = await this.appRepository.count({
+        where: {
+          platform: appPlatform,
+          category: In(categoriesArray),
+        },
+      });
+      const hasNextPage = PER_PAGE * page < totalApps;
+
       return this.appRepository
         .find({
           where: { platform: appPlatform, category: In(categoriesArray) },
+          order: { lastUpdate: 'DESC', createdAt: 'DESC' },
           take: PER_PAGE,
+          skip: appsToSkip,
         })
-        .then((apps) => apps)
+        .then((apps) => {
+          return {
+            data: apps,
+            page,
+            appsPerPage: apps.length,
+            totalApps,
+            hasNextPage,
+          };
+        })
         .catch((error) => {
           return {
             statusCode: 500,
@@ -257,12 +296,28 @@ export class AppsService {
         .split('_')
         .map((element) => Number(element));
 
+      const totalApps = await this.appRepository.count({
+        where: {
+          platform: appPlatform,
+          country: { id: In(countriesArray) },
+        },
+      });
+      const hasNextPage = PER_PAGE * page < totalApps;
+
       return this.appRepository
         .find({
           where: { platform: appPlatform, country: { id: In(countriesArray) } },
           take: PER_PAGE,
         })
-        .then((apps) => apps)
+        .then((apps) => {
+          return {
+            data: apps,
+            page,
+            appsPerPage: apps.length,
+            totalApps,
+            hasNextPage,
+          };
+        })
         .catch((error) => {
           return {
             statusCode: 500,

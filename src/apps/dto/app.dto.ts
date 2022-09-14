@@ -2,6 +2,7 @@ import { Platform } from '../enum/platform.enum';
 import { MinLength, IsEnum } from 'class-validator';
 import { Country } from '../../countries/entities/country.entity';
 import { App } from '../entities/app.entity';
+import { PaginationDto } from '../../common/dto/pagination.dto';
 
 export class CreateAppDto {
   platform: Platform;
@@ -51,7 +52,7 @@ export class AppDto extends CreateAppDto {
   id: number;
 }
 
-export class AppQueryDto {
+export class AppQueryDto extends PaginationDto {
   name: string;
   category: string;
   country: string;
