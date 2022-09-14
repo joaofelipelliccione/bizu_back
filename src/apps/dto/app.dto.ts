@@ -62,4 +62,5 @@ export class PaginatedAppsResultDto {
   page: number;
   appsPerPage: number;
   totalApps: number;
+  hasNextPage: boolean;
 }

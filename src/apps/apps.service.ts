@@ -151,12 +151,13 @@ export class AppsService {
     appPlatform: Platform,
     queryObj: PaginationDto,
   ): Promise<PaginatedAppsResultDto | GenericResponseDto> {
-    const PER_PAGE = 2;
+    const PER_PAGE = 4;
     const page = Number(queryObj.page) || 1;
     const appsToSkip = (page - 1) * PER_PAGE;
     const totalApps = await this.appRepository.count({
       where: { platform: appPlatform },
     });
+    const hasNextPage = PER_PAGE * page < totalApps;
 
     return this.appRepository
       .find({
@@ -171,6 +172,7 @@ export class AppsService {
           page,
           appsPerPage: PER_PAGE,
           totalApps,
+          hasNextPage,
         };
       })
       .catch((error) => {
