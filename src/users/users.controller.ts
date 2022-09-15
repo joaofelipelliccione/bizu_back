@@ -63,10 +63,11 @@ export class UsersController {
             'Usuário criado com sucesso. Um e-mail de verificação foi enviado!',
         };
       })
-      .catch((error) => {
+      .catch(async (error) => {
+        await this.usersService.destroy(accessToken);
         return {
           statusCode: 500,
-          message: `Erro ao enviar e-mail para confirmação cadastral - ${error}`,
+          message: `Criação de conta mal-sucedida. Houve um erro ao enviar e-mail para confirmação cadastral - ${error}`,
         };
       });
   }
