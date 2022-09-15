@@ -1,6 +1,7 @@
 import {
   Entity,
   PrimaryGeneratedColumn,
+  CreateDateColumn,
   OneToOne,
   JoinColumn,
   ManyToOne,
@@ -12,6 +13,9 @@ import { Screen } from '../../screens/entities/screen.entity';
 export class FavoriteScreen {
   @PrimaryGeneratedColumn()
   id!: number;
+
+  @CreateDateColumn({ nullable: false })
+  createdAt!: Date;
 
   // RELAÇÕES:
   @ManyToOne(() => User, (user) => user.favoriteScreens, {
