@@ -1,11 +1,12 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { FavoriteScreen } from './entities/favorite-screen.entity';
-import { CreateFavoriteScreenDto } from './dto/favorite-screen.dto';
 import { GenericResponseDto } from '../common/dto/response.dto';
 import { User } from '../users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { Screen } from '../screens/entities/screen.entity';
+import { PaginationDto } from '../common/dto/pagination.dto';
+import { Platform } from '../apps/enum/platform.enum';
 
 @Injectable()
 export class FavoriteScreensService {
@@ -59,6 +60,59 @@ export class FavoriteScreensService {
         return {
           statusCode: 500,
           message: `Erro ao favoritar tela - ${error}`,
+        };
+      });
+  }
+
+  // BUSCAR TODAS AS TELAS FAVORITADAS POR UM USUÁRIO, POR PLATAFORMA:
+  async findAllByAppPlatform(
+    token: string,
+    appPlatform: Platform,
+    queryObj: PaginationDto,
+  ): Promise<any | GenericResponseDto> {
+    const { sub } = this.jwtService.decode(token);
+
+    const existentUser = await this.userRepository.findOneBy({
+      id: sub,
+    });
+
+    if (existentUser === null) {
+      throw new NotFoundException(
+        'Impossível buscar telas favoritas pois usuário não foi encontrado.',
+      );
+    }
+
+    const PER_PAGE = 3;
+    const page = Number(queryObj.page) || 1;
+    const favoriteScreensToSkip = (page - 1) * PER_PAGE;
+    const totalUserFavoriteScreens = await this.favoriteScreenRepository.count({
+      where: { user: { id: sub }, screen: { app: { platform: appPlatform } } },
+    });
+    const hasNextPage = PER_PAGE * page < totalUserFavoriteScreens;
+
+    return this.favoriteScreenRepository
+      .find({
+        where: {
+          user: { id: sub },
+          screen: { app: { platform: appPlatform } },
+        },
+        order: { createdAt: 'DESC' },
+        take: PER_PAGE,
+        skip: favoriteScreensToSkip,
+      })
+      .then((favoriteScreens) => {
+        return {
+          data: favoriteScreens,
+          page,
+          favoriteScreensPerPage: favoriteScreens.length,
+          totalUserFavoriteScreens,
+          hasNextPage,
+        };
+      })
+      .catch((error) => {
+        return {
+          statusCode: 500,
+          message: `Erro ao buscar aplicações - ${error}`,
         };
       });
   }

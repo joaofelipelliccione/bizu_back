@@ -8,10 +8,13 @@ import {
   Body,
   Param,
   Headers,
+  Query,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { FavoriteScreensService } from './favorite-screens.service';
 import { CreateFavoriteScreenDto } from './dto/favorite-screen.dto';
+import { PaginationDto } from '../common/dto/pagination.dto';
+import { Platform } from '../apps/enum/platform.enum';
 
 @Controller('favoriteScreens')
 export class FavoriteScreensController {
@@ -28,6 +31,36 @@ export class FavoriteScreensController {
   ) {
     const token = authorization.replace('Bearer ', '');
     return this.favoriteScreensService.create(token, screenId);
+  }
+
+  // BUSCAR TODAS AS TELAS MOBILE FAVORITADAS POR DETERMINADO USUÁRIO:
+  @UseGuards(JwtAuthGuard)
+  @Get('mobile/users/current')
+  async findAllMobileFavoriteScreens(
+    @Headers('Authorization') authorization: string,
+    @Query() queryParams: PaginationDto,
+  ) {
+    const token = authorization.replace('Bearer ', '');
+    return await this.favoriteScreensService.findAllByAppPlatform(
+      token,
+      Platform.MOBILE,
+      queryParams,
+    );
+  }
+
+  // BUSCAR TODAS AS TELAS WEB FAVORITADAS POR DETERMINADO USUÁRIO:
+  @UseGuards(JwtAuthGuard)
+  @Get('web/users/current')
+  async findAllWebFavoriteScreens(
+    @Headers('Authorization') authorization: string,
+    @Query() queryParams: PaginationDto,
+  ) {
+    const token = authorization.replace('Bearer ', '');
+    return await this.favoriteScreensService.findAllByAppPlatform(
+      token,
+      Platform.WEB,
+      queryParams,
+    );
   }
 
   // DELETAR TELA FAVORITADA:
