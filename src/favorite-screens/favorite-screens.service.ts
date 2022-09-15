@@ -96,6 +96,7 @@ export class FavoriteScreensService {
           user: { id: sub },
           screen: { app: { platform: appPlatform } },
         },
+        relations: { screen: { app: true } },
         order: { createdAt: 'DESC' },
         take: PER_PAGE,
         skip: favoriteScreensToSkip,
