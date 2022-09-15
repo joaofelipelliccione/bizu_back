@@ -42,6 +42,9 @@ export class User {
   })
   profilePicture!: string;
 
+  @Column('varchar', { nullable: false, default: false })
+  isVerified!: boolean;
+
   @CreateDateColumn({ nullable: false })
   signUp!: Date;
 

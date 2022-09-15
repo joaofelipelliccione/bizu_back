@@ -6,6 +6,8 @@ import { FlowsModule } from './flows/flows.module';
 import { ScreensModule } from './screens/screens.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { FavoriteScreensModule } from './favorite-screens/favorite-screens.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { mailerConfig } from './configs/mailer.config';
 
 @Module({
   imports: [
@@ -16,6 +18,7 @@ import { FavoriteScreensModule } from './favorite-screens/favorite-screens.modul
     ScreensModule,
     SubscriptionsModule,
     FavoriteScreensModule,
+    MailerModule.forRoot(mailerConfig),
   ],
   controllers: [],
   providers: [],

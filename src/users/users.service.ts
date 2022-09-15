@@ -23,14 +23,18 @@ export class UsersService {
     private subscriptionRepository: Repository<Subscription>,
   ) {}
 
-  // BUSCAR USUÁRIO POR email. Utilizado dentro do service create():
+  // BUSCAR USUÁRIO verified POR email. Utilizado no auth.service:
   async findOneByUserMail(userMail: string): Promise<User | null> {
-    return await this.userRepository.findOneBy({ email: userMail });
+    return await this.userRepository.findOne({
+      where: { email: userMail, isVerified: true },
+    });
   }
 
   // CADASTRAR USUÁRIO:
-  async create(data: CreateUserDto): Promise<GenericResponseDto> {
-    const existentUser = await this.findOneByUserMail(data.email);
+  async create(data: CreateUserDto): Promise<User | GenericResponseDto> {
+    const existentUser = await this.userRepository.findOneBy({
+      email: data.email,
+    });
     if (existentUser !== null) {
       throw new ConflictException('Usuário já registrado.');
     }
@@ -58,16 +62,39 @@ export class UsersService {
     newUser.password = bcrypt.hashSync(data.password, 8); // Senha criptografada
     return this.userRepository
       .save(newUser)
+      .then((newUserInfo) => newUserInfo)
+      .catch((error) => {
+        return {
+          statusCode: 500,
+          message: `Erro ao registrar usuário - ${error}`,
+        };
+      });
+  }
+
+  // VERIFICAR USUÁRIO (e-mail de verificação):
+  async verifyUser(token: string): Promise<GenericResponseDto> {
+    const { sub } = this.jwtService.decode(token); // sub é sinônimo de id do usuário
+
+    const existentUser = await this.userRepository.findOne({
+      where: { id: sub, isVerified: false },
+    });
+
+    if (existentUser === null) {
+      throw new NotFoundException('Usuário já verificado ou não encontrado.');
+    }
+
+    return await this.userRepository
+      .update(sub, { isVerified: true })
       .then(() => {
         return {
-          statusCode: 201,
-          message: 'Usuário registrado com sucesso!',
+          statusCode: 200,
+          message: 'Usuário verificado com sucesso!',
         };
       })
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao registrar usuário - ${error}`,
+          message: `Erro ao verificar usuário - ${error}`,
         };
       });
   }
