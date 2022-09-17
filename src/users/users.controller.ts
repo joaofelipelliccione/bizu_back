@@ -12,6 +12,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { LocalAuthGuard } from '../auth/local-auth.guard';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { AuthService } from '../auth/auth.service';
 import { UsersService } from './users.service';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -98,6 +99,7 @@ export class UsersController {
   }
 
   // ATUALIZAR USUÁRIO:
+  @UseGuards(JwtAuthGuard)
   @Patch('current')
   async update(@Request() req, @Body() data: Partial<UpdateUserDto>) {
     const token = req.cookies.accessToken;
@@ -110,6 +112,7 @@ export class UsersController {
   }
 
   // BUSCAR USUÁRIO POR TOKEN --> id do usuário:
+  @UseGuards(JwtAuthGuard)
   @Get('current')
   async findOneByUserToken(@Request() req) {
     const token = req.cookies.accessToken;
@@ -122,6 +125,7 @@ export class UsersController {
   }
 
   // DELETAR USUÁRIO:
+  @UseGuards(JwtAuthGuard)
   @Delete('current')
   async destroy(@Request() req) {
     const token = req.cookies.accessToken;
