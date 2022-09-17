@@ -16,7 +16,9 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     );
 
     if (!existentUser) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(
+        'Login não realizado. E-mail e/ou senha inválidas.',
+      );
     }
     return existentUser;
   }
