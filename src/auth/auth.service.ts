@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { UserDto } from '../users/dto/user.dto';
@@ -12,15 +16,22 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<UserDto | null> {
+  async validateUser(email: string, password: string): Promise<UserDto> {
     const existentUser = await this.usersService.findOneByUserMail(email);
-
-    if (existentUser && bcrypt.compareSync(password, existentUser.password)) {
-      const { ...result } = existentUser;
-      return result;
+    if (!existentUser) {
+      throw new NotFoundException('Nenhum usuário encontrado :(');
     }
 
-    return null;
+    if (!existentUser.isVerified) {
+      throw new UnauthorizedException('Usuário cadastrado mas não verificado.');
+    }
+
+    if (bcrypt.compareSync(password, existentUser.password) === false) {
+      throw new UnauthorizedException('Senha inválida.');
+    }
+
+    const { ...result } = existentUser;
+    return result;
   }
 
   // GERAÇÃO DO JWT. Utilizado dentro do login() de users.controller.ts:

@@ -23,10 +23,10 @@ export class UsersService {
     private subscriptionRepository: Repository<Subscription>,
   ) {}
 
-  // BUSCAR USUÁRIO verified POR email. Utilizado no auth.service:
+  // BUSCAR USUÁRIO POR email. Utilizado no auth.service:
   async findOneByUserMail(userMail: string): Promise<User | null> {
     return await this.userRepository.findOne({
-      where: { email: userMail, isVerified: true },
+      where: { email: userMail },
     });
   }
 
