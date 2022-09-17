@@ -9,7 +9,6 @@ import {
   Request,
   Response,
   Param,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { LocalAuthGuard } from '../auth/local-auth.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
@@ -95,7 +94,10 @@ export class UsersController {
     });
 
     await this.usersService.updateLastSignIn(accessToken); // Atualiza a coluna lastSignIn.
-    return { msg: `Login realizado com sucesso - Token: ${accessToken}` };
+    return {
+      statusCode: 200,
+      message: `Login realizado com sucesso!`,
+    };
   }
 
   // ATUALIZAR USUÁRIO:
@@ -103,11 +105,6 @@ export class UsersController {
   @Patch('current')
   async update(@Request() req, @Body() data: Partial<UpdateUserDto>) {
     const token = req.cookies.accessToken;
-
-    if (!token) {
-      throw new UnauthorizedException();
-    }
-
     return await this.usersService.update(token, data);
   }
 
@@ -116,11 +113,6 @@ export class UsersController {
   @Get('current')
   async findOneByUserToken(@Request() req) {
     const token = req.cookies.accessToken;
-
-    if (!token) {
-      throw new UnauthorizedException();
-    }
-
     return await this.usersService.findOneByUserToken(token);
   }
 
@@ -129,11 +121,6 @@ export class UsersController {
   @Delete('current')
   async destroy(@Request() req) {
     const token = req.cookies.accessToken;
-
-    if (!token) {
-      throw new UnauthorizedException();
-    }
-
     return await this.usersService.destroy(token);
   }
 }
