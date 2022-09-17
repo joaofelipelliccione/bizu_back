@@ -7,9 +7,10 @@ import {
   Delete,
   Body,
   Request,
+  Response,
   Param,
   Headers,
-  InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { LocalAuthGuard } from '../auth/local-auth.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -18,6 +19,7 @@ import { UsersService } from './users.service';
 import { MailerService } from '@nestjs-modules/mailer';
 import { CreateUserDto, UpdateUserDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
+import 'dotenv/config';
 
 @Controller('users')
 export class UsersController {
@@ -81,11 +83,20 @@ export class UsersController {
   // LOGIN DO USUÁRIO:
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req) {
+  async login(@Request() req, @Response({ passthrough: true }) res) {
     const { accessToken } = await this.authService.generateJWT(req.user);
+    const initial = new Date();
+    const today = new Date(initial);
+
+    // Salvando o token do usuário em um cookie httpOnly.
+    res.cookie('accessToken', accessToken, {
+      expires: new Date(today.setDate(today.getDate() + 1)), // Expira em 1 dia
+      sameSite: 'strict',
+      httpOnly: true,
+    });
 
     await this.usersService.updateLastSignIn(accessToken); // Atualiza a coluna lastSignIn.
-    return await this.authService.generateJWT(req.user);
+    return { msg: `Login realizado com sucesso - Token: ${accessToken}` };
   }
 
   // ATUALIZAR USUÁRIO:
@@ -100,10 +111,14 @@ export class UsersController {
   }
 
   // BUSCAR USUÁRIO POR TOKEN --> id do usuário:
-  @UseGuards(JwtAuthGuard)
   @Get('current')
-  async findOneByUserToken(@Headers('Authorization') authorization: string) {
-    const token = authorization.replace('Bearer ', '');
+  async findOneByUserToken(@Request() req) {
+    const token = req.cookies.accessToken;
+
+    if (!token) {
+      throw new UnauthorizedException();
+    }
+
     return await this.usersService.findOneByUserToken(token);
   }
 

@@ -5,8 +5,8 @@ import { JwtStrategy } from './jwt.strategy';
 import { UsersModule } from '../users/users.module';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import 'dotenv/config';
 import { RolesGuard } from './roles.guard';
+import 'dotenv/config';
 
 @Module({
   imports: [
@@ -14,7 +14,7 @@ import { RolesGuard } from './roles.guard';
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '2d' },
+      signOptions: { expiresIn: '1d' },
     }),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy, RolesGuard],
