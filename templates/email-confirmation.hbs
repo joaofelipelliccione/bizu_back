@@ -1,11 +1,14 @@
 <html>
-  <body>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300&display=swap');
+  </style>
+  <body style="font-family: 'IBM Plex Sans', sans-serif;">
     <center>
-      <div style="background-color: #d3d3d3; max-width: 840px; margin: 0; padding: 30px;">
-        <h2 style="color: #292536; text-align: center">Confirme seu endereço de email</h2>
-        <p>Para confirmar seu email clique no botão abaixo, ou acesse o seguinte link: </p>
-        <div style="margin: 20px auto; width: 180px; padding: 10px 20px; background-color: #442d52; border-radius: 5px; text-align: center;">
-          <a href="http://localhost:3000/users/verify/{{accessToken}}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: #fcfcfc; font-size: 18px; margin: 0 auto;">Confirmar Email</a>
+      <div style="background-color: #ecebeb; border-radius: 0 50px; max-width: 900px; margin: 0; padding: 30px;">
+        <h2 style="color: #000000; text-align: center">Por favor, confirme seu endereço de email : )</h2>
+        <p style="font-size: 18px; margin: 0 0 45px 0;">Para verificar sua conta e começar a utilizar o bizu.design®, clique no botão abaixo!</p>
+        <div style="width: 180px;  margin: 0 0 20px 0; padding: 10px 20px; background-color: #ac7fc6; border-radius: 5px; text-align: center;">
+          <a href="http://localhost:3000/users/verify/{{accessToken}}" target="_blank" rel="noopener noreferrer" style="text-decoration: none; color: #fcfcfc; font-size: 18px; margin: 0 auto;">Confirmar</a>
         </div>
       </div>
     </center>
