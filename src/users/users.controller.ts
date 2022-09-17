@@ -9,11 +9,9 @@ import {
   Request,
   Response,
   Param,
-  Headers,
   UnauthorizedException,
 } from '@nestjs/common';
 import { LocalAuthGuard } from '../auth/local-auth.guard';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AuthService } from '../auth/auth.service';
 import { UsersService } from './users.service';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -100,13 +98,14 @@ export class UsersController {
   }
 
   // ATUALIZAR USUÁRIO:
-  @UseGuards(JwtAuthGuard) // O endpoint abaixo só será acessado ao enviar um token válido.
   @Patch('current')
-  async update(
-    @Headers('Authorization') authorization: string,
-    @Body() data: Partial<UpdateUserDto>,
-  ) {
-    const token = authorization.replace('Bearer ', '');
+  async update(@Request() req, @Body() data: Partial<UpdateUserDto>) {
+    const token = req.cookies.accessToken;
+
+    if (!token) {
+      throw new UnauthorizedException();
+    }
+
     return await this.usersService.update(token, data);
   }
 
@@ -123,10 +122,14 @@ export class UsersController {
   }
 
   // DELETAR USUÁRIO:
-  @UseGuards(JwtAuthGuard)
   @Delete('current')
-  async destroy(@Headers('Authorization') authorization: string) {
-    const token = authorization.replace('Bearer ', '');
+  async destroy(@Request() req) {
+    const token = req.cookies.accessToken;
+
+    if (!token) {
+      throw new UnauthorizedException();
+    }
+
     return await this.usersService.destroy(token);
   }
 }
