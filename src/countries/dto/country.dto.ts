@@ -5,10 +5,6 @@ export class CreateCountryDto {
   flag: string;
 }
 
-export class CountryDto extends CreateCountryDto {
-  id: string;
-}
-
 export class UpdateCountryDto {
   @MinLength(3, {
     message: 'O nome do país deve possuir, no mínimo, 3 caracteres.',
@@ -20,4 +16,8 @@ export class UpdateCountryDto {
       'O link da imagem da bandeira do país deve apresentar, no mínimo, 8 caracteres.',
   })
   flag: string;
+}
+
+export class CountryDto extends CreateCountryDto {
+  id: string;
 }

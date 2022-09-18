@@ -21,9 +21,9 @@ export class FavoriteScreen {
   @ManyToOne(() => User, (user) => user.favoriteScreens, {
     nullable: false,
   })
-  user: User;
+  user!: User;
 
-  @OneToOne(() => Screen)
+  @OneToOne(() => Screen, { nullable: false })
   @JoinColumn()
-  screen: Screen;
+  screen!: Screen;
 }

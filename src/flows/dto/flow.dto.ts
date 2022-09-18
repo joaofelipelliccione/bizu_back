@@ -5,10 +5,6 @@ export class CreateFlowDto {
   description: string;
 }
 
-export class FlowDto extends CreateFlowDto {
-  id: string;
-}
-
 export class UpdateFlowDto {
   @MinLength(3, {
     message: 'O nome do fluxo deve possuir, no mínimo, 3 caracteres.',
@@ -19,4 +15,8 @@ export class UpdateFlowDto {
     message: 'A descrição do fluxo deve apresentar, no mínimo, 8 caracteres.',
   })
   description: string;
+}
+
+export class FlowDto extends CreateFlowDto {
+  id: string;
 }
