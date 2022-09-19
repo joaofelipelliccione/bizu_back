@@ -10,6 +10,7 @@ const dataSource = new DataSource({
   database: process.env.JAWS_DB_NAME,
   entities: ['dist/**/*.entity.js'],
   migrations: ['dist/database/migrations/*.js'],
+  migrationsRun: true,
   synchronize: false,
 });
 
