@@ -3,11 +3,11 @@ FROM node:16-alpine
 # mkdir app + cd app, dentro do container.
 WORKDIR /app
 # Copiando os arquivos package.json e package-lock.json para dentro do diretório /app, do container.
-COPY package*.json ./app
+COPY package*.json ./
 # Instalando de forma limpa todas as dependências do projeto, contidas no package.json.
 RUN npm ci
 # Copiando todos os arquivos contidos no diretório local "bizu_back", para o diretório "app", do container.
-COPY . ./app
+COPY . .
 # Gerando o diretório dist, que acumula a API compilada.
 RUN npm run build
 # Execução do comando para que o servidor da API inicie.
