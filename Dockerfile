@@ -11,6 +11,6 @@ COPY . .
 # Gerando o diretório dist, que acumula a API compilada.
 RUN npm run build
 # Execução do comando para que o servidor da API inicie.
-CMD ["node", "dist/main.js"]
+CMD ["npm", "run", "start:prod"]
 # Expondo o número da porta interna.
 EXPOSE 80
