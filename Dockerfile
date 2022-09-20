@@ -12,3 +12,5 @@ COPY . .
 RUN npm run build
 # Execução do comando para que o servidor da API inicie.
 CMD ["npm", "run", "start:prod"]
+# Definindo o número da porta interna do container.
+EXPOSE 3001
