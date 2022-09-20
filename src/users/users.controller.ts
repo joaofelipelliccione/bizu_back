@@ -47,7 +47,7 @@ export class UsersController {
     const mail = {
       to: email,
       from: 'noreply@bizudesign.com',
-      subject: 'Email de confirmação',
+      subject: 'bizu design - Verifique seu e-mail!',
       template: 'email-confirmation',
       context: {
         accessToken,

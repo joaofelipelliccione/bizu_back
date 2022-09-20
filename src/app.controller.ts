@@ -7,7 +7,7 @@ export class AppController {
   async ping() {
     return {
       statusCode: 200,
-      message: 'API bizu.design!',
+      message: 'API bizu design!',
     };
   }
 }

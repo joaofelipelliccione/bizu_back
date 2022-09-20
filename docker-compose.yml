@@ -23,7 +23,7 @@ services:
       retries: 5
   db:
     image: mysql:8.0.30 # Utilizará a imagem oficial do MySQL, oriunda do Docker Hub, para buildar o container.
-    container_name: bizu-db
+    container_name: bizu-db-dev
     ports:
       - 3002:3306 # O banco de dados será acessado na porta 3002.
     environment:
