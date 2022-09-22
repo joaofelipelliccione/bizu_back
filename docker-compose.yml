@@ -16,7 +16,7 @@ services:
       - DB_HOST=db # Não será mais localhost e sim o banco MySQL que rodará no container "db", estruturado abaixo.
       - DB_PORT=3306
       - JWT_SECRET=sEgReDiNhO
-      - MAIL_TRANSPORT=smtps://jf.pelliccione@gmail.com:vjwxizixvrssymrc@smtp.gmail.com
+      - MAIL_TRANSPORT=smtps://zedubizu@gmail.com:wqrlqothdyvnkjsg@smtp.gmail.com
     healthcheck:
       test: ["CMD", "lsof", "-t", "-i:3001"]
       timeout: 10s
