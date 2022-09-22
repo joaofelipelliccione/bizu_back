@@ -38,7 +38,8 @@ export class User {
 
   @Column('varchar', {
     nullable: false,
-    default: 'https://default-profile-image-png-1-Transparent-Images.png',
+    default:
+      'https://bizudesignbucket.s3.sa-east-1.amazonaws.com/profile_avatars/default.jpg',
   })
   profilePicture!: string;
 

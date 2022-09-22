@@ -20,7 +20,7 @@ export class bizuStart1663544418950 implements MigrationInterface {
       `CREATE TABLE \`subscription\` (\`id\` int NOT NULL AUTO_INCREMENT, \`name\` varchar(30) NOT NULL, \`price\` decimal(5,2) NOT NULL, \`durationInMonths\` int NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
-      `CREATE TABLE \`user\` (\`id\` varchar(36) NOT NULL, \`role\` enum ('admin', 'user') NOT NULL DEFAULT 'user', \`username\` varchar(100) NOT NULL, \`email\` varchar(255) NOT NULL, \`password\` varchar(255) NOT NULL, \`profilePicture\` varchar(255) NOT NULL DEFAULT 'https://default-profile-image-png-1-Transparent-Images.png', \`isVerified\` tinyint NOT NULL DEFAULT 0, \`signUp\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`lastSignIn\` datetime NULL, \`subscriptionId\` int NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+      `CREATE TABLE \`user\` (\`id\` varchar(36) NOT NULL, \`role\` enum ('admin', 'user') NOT NULL DEFAULT 'user', \`username\` varchar(100) NOT NULL, \`email\` varchar(255) NOT NULL, \`password\` varchar(255) NOT NULL, \`profilePicture\` varchar(255) NOT NULL DEFAULT 'https://bizudesignbucket.s3.sa-east-1.amazonaws.com/profile_avatars/default.jpg', \`isVerified\` tinyint NOT NULL DEFAULT 0, \`signUp\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`lastSignIn\` datetime NULL, \`subscriptionId\` int NOT NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
     await queryRunner.query(
       `CREATE TABLE \`favorite_screen\` (\`id\` int NOT NULL AUTO_INCREMENT, \`createdAt\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`userId\` varchar(36) NOT NULL, \`screenId\` int NOT NULL, UNIQUE INDEX \`REL_0aae45eb778f1cd86191f114fb\` (\`screenId\`), PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
