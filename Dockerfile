@@ -11,7 +11,7 @@ COPY . .
 # Gerando o diretório dist, que acumula a API compilada.
 RUN npm run build
 # Execução do comando para que o servidor da API inicie. ALTERAR ENTRE DEV/PROD!
-# CMD ["npm", "run", "start:dev"]
+# CMD ["npm", "run", "start:debug"]
 CMD ["npm", "run", "start:prod"]
 # Definindo o número da porta interna do container.
 EXPOSE 3001
