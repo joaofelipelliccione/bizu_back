@@ -3,6 +3,9 @@ services:
   backend:
     container_name: bizu-back
     build: ./ # Utilizará o Dockerfile contindo em ./ para gerar a imagem e buildar o container.
+    volumes: # Necessário para que o hot-reload funcione.
+      - .:/app
+      - /app/node_modules
     restart: 'always' # Sempre que o serviço parar ele será reiniciado, exceto quando haja interrupção manual.
     ports:
       - 3001:3001 # A API será acessada em localhost:3001.
