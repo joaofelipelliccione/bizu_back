@@ -147,24 +147,11 @@ export class AppsService {
       });
   }
 
-  // BUSCAR APP POR id:
-  async findOneByAppId(appId: number): Promise<App> {
-    const existentApp = await this.appRepository.findOneBy({
-      id: appId,
-    });
-
-    if (existentApp === null) {
-      throw new NotFoundException('Aplicação não encontrada :(');
-    }
-
-    return existentApp;
-  }
-
   // BUSCAR IDs, NOMES, LOGOs DE APPS P/ SEARCHBAR
   async findAllForSearchbar(
     queryObj: AppQueryForSearchbarDto,
   ): Promise<SearchbarAppsResultDto[] | GenericResponseDto> {
-    if (queryObj.platform !== 'All') {
+    if (queryObj.platform !== 'all') {
       return this.appRepository
         .find({
           where: { platform: queryObj.platform as Platform },
@@ -172,6 +159,7 @@ export class AppsService {
             id: true,
             logo: true,
             name: true,
+            platform: true,
           },
         })
         .then((apps) => apps)
@@ -200,6 +188,24 @@ export class AppsService {
       });
   }
 
+  // BUSCAR APP POR id:
+  async findOneByAppId(appId: number): Promise<App> {
+    const existentApp = await this.appRepository.find({
+      where: { id: appId },
+      relations: {
+        category: true,
+        country: true,
+        screens: true,
+      },
+    });
+
+    if (existentApp === null) {
+      throw new NotFoundException('Aplicação não encontrada :(');
+    }
+
+    return existentApp[0];
+  }
+
   // BUSCAR TODOS OS APPS POR PLATAFORMA:
   async findAllByAppPlatform(
     appPlatform: Platform,
@@ -216,6 +222,11 @@ export class AppsService {
     return this.appRepository
       .find({
         where: { platform: appPlatform },
+        relations: {
+          category: true,
+          country: true,
+          screens: true,
+        },
         order: { lastUpdate: 'DESC', createdAt: 'DESC' },
         take: PER_PAGE,
         skip: appsToSkip,
@@ -247,6 +258,11 @@ export class AppsService {
     return this.appRepository
       .find({
         where: { platform: appPlatform, name: Like(`%${queryObj.name}%`) },
+        relations: {
+          category: true,
+          country: true,
+          screens: true,
+        },
         take: PER_PAGE,
       })
       .then((apps) => apps)
@@ -291,6 +307,11 @@ export class AppsService {
             category: { id: In(categoriesArray) },
             country: { id: In(countriesArray) },
           },
+          relations: {
+            category: true,
+            country: true,
+            screens: true,
+          },
           order: { lastUpdate: 'DESC', createdAt: 'DESC' },
           take: PER_PAGE,
           skip: appsToSkip,
@@ -331,6 +352,12 @@ export class AppsService {
             platform: appPlatform,
             category: { id: In(categoriesArray) },
           },
+          relations: {
+            category: true,
+            country: true,
+            screens: true,
+          },
+          order: { lastUpdate: 'DESC', createdAt: 'DESC' },
           take: PER_PAGE,
           skip: appsToSkip,
         })
@@ -367,6 +394,12 @@ export class AppsService {
       return this.appRepository
         .find({
           where: { platform: appPlatform, country: { id: In(countriesArray) } },
+          relations: {
+            category: true,
+            country: true,
+            screens: true,
+          },
+          order: { lastUpdate: 'DESC', createdAt: 'DESC' },
           take: PER_PAGE,
           skip: appsToSkip,
         })

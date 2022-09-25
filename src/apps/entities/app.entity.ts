@@ -56,19 +56,16 @@ export class App {
   // RELAÇÕES:
   @ManyToOne(() => Category, (category) => category.apps, {
     nullable: false,
-    eager: true,
   })
   category!: Category;
 
   @ManyToOne(() => Country, (country) => country.apps, {
     nullable: false,
-    eager: true,
   })
   country!: Country;
 
   @OneToMany(() => Screen, (screen) => screen.app, {
     nullable: false,
-    eager: true,
   })
   screens!: Screen[];
 }
