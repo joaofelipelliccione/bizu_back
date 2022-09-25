@@ -13,9 +13,10 @@ import { Platform } from './enum/platform.enum';
 import {
   CreateAppDto,
   UpdateAppDto,
+  AppQueryForSearchbarDto,
+  SearchbarAppsResultDto,
   AppQueryDto,
   PaginatedAppsResultDto,
-  AppQueryForSearchbarDto,
 } from './dto/app.dto';
 import { GenericResponseDto } from '../common/dto/response.dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
@@ -162,7 +163,7 @@ export class AppsService {
   // BUSCAR IDs, NOMES, LOGOs DE APPS P/ SEARCHBAR
   async findAllForSearchbar(
     queryObj: AppQueryForSearchbarDto,
-  ): Promise<any | GenericResponseDto> {
+  ): Promise<SearchbarAppsResultDto[] | GenericResponseDto> {
     if (queryObj.platform !== 'All') {
       return this.appRepository
         .find({
@@ -171,6 +172,13 @@ export class AppsService {
             id: true,
             logo: true,
             name: true,
+            category: { id: false, name: false },
+            country: { id: false, name: false, flag: false },
+            screens: {
+              id: false,
+              print: false,
+              flow: { id: false, name: false, description: false },
+            },
           },
         })
         .then((apps) => apps)

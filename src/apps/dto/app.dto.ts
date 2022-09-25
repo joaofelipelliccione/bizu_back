@@ -54,6 +54,12 @@ export class AppQueryForSearchbarDto {
   platform: string;
 }
 
+export class SearchbarAppsResultDto {
+  id: number;
+  logo: string;
+  name: string;
+}
+
 export class AppQueryDto extends PaginationDto {
   name: string;
   category: string;
