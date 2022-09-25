@@ -138,7 +138,7 @@ export class CountriesService {
       .catch((error) => {
         return {
           statusCode: 500,
-          message: `Erro ao remover País - ${error}`,
+          message: `Erro ao remover país - ${error}`,
         };
       });
   }

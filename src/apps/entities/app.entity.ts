@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { MinLength, IsEnum } from 'class-validator';
 import { Platform } from '../enum/platform.enum';
+import { Category } from '../../categories/entities/category.entity';
 import { Country } from '../../countries/entities/country.entity';
 import { Screen } from '../../screens/entities/screen.entity';
 
@@ -46,12 +47,6 @@ export class App {
   })
   websiteLink!: string;
 
-  @Column('varchar', { nullable: false, length: 40 })
-  @MinLength(3, {
-    message: 'O categoria da aplicação deve possuir, no mínimo, 3 caracteres.',
-  })
-  category!: string;
-
   @CreateDateColumn({ nullable: false })
   createdAt!: Date;
 
@@ -59,6 +54,12 @@ export class App {
   lastUpdate: Date;
 
   // RELAÇÕES:
+  @ManyToOne(() => Category, (category) => category.apps, {
+    nullable: false,
+    eager: true,
+  })
+  category!: Category;
+
   @ManyToOne(() => Country, (country) => country.apps, {
     nullable: false,
     eager: true,

@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Repository, Like, In } from 'typeorm';
 import { App } from './entities/app.entity';
+import { Category } from '../categories/entities/category.entity';
 import { Country } from '../countries/entities/country.entity';
 import { validate } from 'class-validator';
 import { Platform } from './enum/platform.enum';
@@ -23,6 +24,8 @@ export class AppsService {
   constructor(
     @Inject('APP_REPOSITORY')
     private appRepository: Repository<App>,
+    @Inject('CATEGORY_REPOSITORY')
+    private categoryRepository: Repository<Category>,
     @Inject('COUNTRY_REPOSITORY')
     private countryRepository: Repository<Country>,
   ) {}
@@ -37,6 +40,15 @@ export class AppsService {
     const existentApp = await this.findOneByAppName(data.name);
     if (existentApp !== null) {
       throw new ConflictException('Aplicação já registrada.');
+    }
+
+    const existentCategory = await this.categoryRepository.findOneBy({
+      id: data.category,
+    });
+    if (existentCategory === null) {
+      throw new NotFoundException(
+        'Antes de cadastrar o app, deve-se registrar sua respectiva categoria.',
+      );
     }
 
     const existentCountry = await this.countryRepository.findOneBy({
@@ -54,7 +66,7 @@ export class AppsService {
     newApp.logo = data.logo;
     newApp.slogan = data.slogan;
     newApp.websiteLink = data.websiteLink;
-    newApp.category = data.category;
+    newApp.category = existentCategory;
     newApp.country = existentCountry;
 
     const validationErrors = await validate(newApp);
@@ -214,7 +226,9 @@ export class AppsService {
     const appsToSkip = (page - 1) * PER_PAGE;
 
     if (queryObj.category && queryObj.country) {
-      const categoriesArray = queryObj.category.split('_');
+      const categoriesArray = queryObj.category
+        .split('_')
+        .map((element) => Number(element));
       const countriesArray = queryObj.country
         .split('_')
         .map((element) => Number(element));
@@ -222,7 +236,7 @@ export class AppsService {
       const totalApps = await this.appRepository.count({
         where: {
           platform: appPlatform,
-          category: In(categoriesArray),
+          category: { id: In(categoriesArray) },
           country: { id: In(countriesArray) },
         },
       });
@@ -232,7 +246,7 @@ export class AppsService {
         .find({
           where: {
             platform: appPlatform,
-            category: In(categoriesArray),
+            category: { id: In(categoriesArray) },
             country: { id: In(countriesArray) },
           },
           order: { lastUpdate: 'DESC', createdAt: 'DESC' },
@@ -257,20 +271,24 @@ export class AppsService {
     }
 
     if (queryObj.category) {
-      const categoriesArray = queryObj.category.split('_');
+      const categoriesArray = queryObj.category
+        .split('_')
+        .map((element) => Number(element));
 
       const totalApps = await this.appRepository.count({
         where: {
           platform: appPlatform,
-          category: In(categoriesArray),
+          category: { id: In(categoriesArray) },
         },
       });
       const hasNextPage = PER_PAGE * page < totalApps;
 
       return this.appRepository
         .find({
-          where: { platform: appPlatform, category: In(categoriesArray) },
-          order: { lastUpdate: 'DESC', createdAt: 'DESC' },
+          where: {
+            platform: appPlatform,
+            category: { id: In(categoriesArray) },
+          },
           take: PER_PAGE,
           skip: appsToSkip,
         })
@@ -308,6 +326,7 @@ export class AppsService {
         .find({
           where: { platform: appPlatform, country: { id: In(countriesArray) } },
           take: PER_PAGE,
+          skip: appsToSkip,
         })
         .then((apps) => {
           return {

@@ -9,6 +9,7 @@ import { FavoriteScreensModule } from './favorite-screens/favorite-screens.modul
 import { MailerModule } from '@nestjs-modules/mailer';
 import { mailerConfig } from './configs/mailer.config';
 import { AppController } from './app.controller';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { AppController } from './app.controller';
     SubscriptionsModule,
     FavoriteScreensModule,
     MailerModule.forRoot(mailerConfig),
+    CategoriesModule,
   ],
   controllers: [AppController],
   providers: [],

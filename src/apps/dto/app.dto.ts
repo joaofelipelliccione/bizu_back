@@ -1,5 +1,6 @@
 import { Platform } from '../enum/platform.enum';
 import { MinLength, IsEnum } from 'class-validator';
+import { Category } from '../../categories/entities/category.entity';
 import { Country } from '../../countries/entities/country.entity';
 import { App } from '../entities/app.entity';
 import { PaginationDto } from '../../common/dto/pagination.dto';
@@ -10,7 +11,7 @@ export class CreateAppDto {
   logo: string;
   slogan: string;
   websiteLink: string;
-  category: string;
+  category: number;
   country: number;
 }
 
@@ -40,10 +41,7 @@ export class UpdateAppDto {
   })
   websiteLink: string;
 
-  @MinLength(3, {
-    message: 'O categoria da aplicação deve possuir, no mínimo, 3 caracteres.',
-  })
-  category: string;
+  category: Category;
 
   country: Country;
 }
