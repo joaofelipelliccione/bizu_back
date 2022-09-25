@@ -15,6 +15,7 @@ import {
   UpdateAppDto,
   AppQueryDto,
   PaginatedAppsResultDto,
+  AppQueryForSearchbarDto,
 } from './dto/app.dto';
 import { GenericResponseDto } from '../common/dto/response.dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
@@ -156,6 +157,46 @@ export class AppsService {
     }
 
     return existentApp;
+  }
+
+  // BUSCAR IDs, NOMES, LOGOs DE APPS P/ SEARCHBAR
+  async findAllForSearchbar(
+    queryObj: AppQueryForSearchbarDto,
+  ): Promise<any | GenericResponseDto> {
+    if (queryObj.platform !== 'All') {
+      return this.appRepository
+        .find({
+          where: { platform: queryObj.platform as Platform },
+          select: {
+            id: true,
+            logo: true,
+            name: true,
+          },
+        })
+        .then((apps) => apps)
+        .catch((error) => {
+          return {
+            statusCode: 500,
+            message: `Erro ao buscar aplicações para searchbar - ${error}`,
+          };
+        });
+    }
+
+    return this.appRepository
+      .find({
+        select: {
+          id: true,
+          name: true,
+          logo: true,
+        },
+      })
+      .then((apps) => apps)
+      .catch((error) => {
+        return {
+          statusCode: 500,
+          message: `Erro ao buscar aplicações para searchbar - ${error}`,
+        };
+      });
   }
 
   // BUSCAR TODOS OS APPS POR PLATAFORMA:

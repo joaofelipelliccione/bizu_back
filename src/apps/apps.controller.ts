@@ -15,7 +15,12 @@ import { RolesGuard } from 'src/auth/roles.guard';
 import { Role } from 'src/users/enum/role.enum';
 import { AppsService } from './apps.service';
 import { Platform } from './enum/platform.enum';
-import { CreateAppDto, UpdateAppDto, AppQueryDto } from './dto/app.dto';
+import {
+  CreateAppDto,
+  UpdateAppDto,
+  AppQueryForSearchbarDto,
+  AppQueryDto,
+} from './dto/app.dto';
 import { PaginationDto } from '../common/dto/pagination.dto';
 
 @Controller('apps')
@@ -56,6 +61,12 @@ export class AppsController {
       Platform.WEB,
       queryParams,
     );
+  }
+
+  // BUSCAR IDs, NOMES, LOGOs DE APPS P/ SEARCHBAR
+  @Get('searchbar')
+  async findAllForSearchbar(@Query() queryParams: AppQueryForSearchbarDto) {
+    return await this.appsService.findAllForSearchbar(queryParams);
   }
 
   // BUSCAR APPS MOBILE POR PESQUISA LIKE %appName%:

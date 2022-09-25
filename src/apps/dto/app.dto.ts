@@ -50,6 +50,10 @@ export class AppDto extends CreateAppDto {
   id: number;
 }
 
+export class AppQueryForSearchbarDto {
+  platform: string;
+}
+
 export class AppQueryDto extends PaginationDto {
   name: string;
   category: string;
