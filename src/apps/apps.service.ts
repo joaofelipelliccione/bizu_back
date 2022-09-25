@@ -172,13 +172,6 @@ export class AppsService {
             id: true,
             logo: true,
             name: true,
-            category: { id: false, name: false },
-            country: { id: false, name: false, flag: false },
-            screens: {
-              id: false,
-              print: false,
-              flow: { id: false, name: false, description: false },
-            },
           },
         })
         .then((apps) => apps)
