@@ -177,6 +177,7 @@ export class AppsService {
           id: true,
           name: true,
           logo: true,
+          platform: true,
         },
       })
       .then((apps) => apps)
