@@ -188,24 +188,6 @@ export class AppsService {
       });
   }
 
-  // BUSCAR APP POR id:
-  async findOneByAppId(appId: number): Promise<App> {
-    const existentApp = await this.appRepository.find({
-      where: { id: appId },
-      relations: {
-        category: true,
-        country: true,
-        screens: true,
-      },
-    });
-
-    if (existentApp === null) {
-      throw new NotFoundException('Aplicação não encontrada :(');
-    }
-
-    return existentApp[0];
-  }
-
   // BUSCAR TODOS OS APPS POR PLATAFORMA:
   async findAllByAppPlatform(
     appPlatform: Platform,
@@ -419,6 +401,24 @@ export class AppsService {
           };
         });
     }
+  }
+
+  // BUSCAR APP POR id:
+  async findOneByAppId(appId: number): Promise<App> {
+    const existentApp = await this.appRepository.find({
+      where: { id: appId },
+      relations: {
+        category: true,
+        country: true,
+        screens: true,
+      },
+    });
+
+    if (existentApp === null) {
+      throw new NotFoundException('Aplicação não encontrada :(');
+    }
+
+    return existentApp[0];
   }
 
   // DELETAR APP:

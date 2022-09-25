@@ -49,13 +49,6 @@ export class AppsController {
     return await this.appsService.findAllForSearchbar(queryParams);
   }
 
-  // BUSCAR APPS POR id:
-  @UseGuards(JwtAuthGuard)
-  @Get(':id')
-  async findOneByAppId(@Param('id') id: number) {
-    return await this.appsService.findOneByAppId(id);
-  }
-
   // BUSCAR TODOS OS APPS MOBILE:
   @UseGuards(JwtAuthGuard)
   @Get('mobile')
@@ -111,6 +104,13 @@ export class AppsController {
   @Get('web/filter')
   async findAllWebAppsByQuery(@Query() queryParams: AppQueryDto) {
     return await this.appsService.findAllAppsByQuery(Platform.WEB, queryParams);
+  }
+
+  // BUSCAR APPS POR id:
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  async findOneByAppId(@Param('id') id: number) {
+    return await this.appsService.findOneByAppId(id);
   }
 
   // DELETAR APP:
