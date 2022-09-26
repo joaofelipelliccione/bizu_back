@@ -4,7 +4,7 @@ import { Throttle } from '@nestjs/throttler';
 @Controller()
 export class AppController {
   // PING:
-  @Throttle(5, 2 * 60)
+  @Throttle(5, 120)
   @Get()
   async ping() {
     return {
