@@ -10,6 +10,7 @@ import {
   Response,
   Param,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { LocalAuthGuard } from '../auth/local-auth.guard';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { AuthService } from '../auth/auth.service';
@@ -28,6 +29,7 @@ export class UsersController {
   ) {}
 
   // CADASTRAR USUÁRIO:
+  @Throttle(5, 15 * 60)
   @Post()
   async create(@Body() userToBeCreated: CreateUserDto) {
     const createdUser = await this.usersService.create(userToBeCreated);
@@ -79,6 +81,7 @@ export class UsersController {
   }
 
   // LOGIN DO USUÁRIO:
+  @Throttle(5, 15 * 60)
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Request() req, @Response({ passthrough: true }) res) {
