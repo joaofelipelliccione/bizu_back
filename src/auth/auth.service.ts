@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
+import { MailerService } from '@nestjs-modules/mailer';
 import { UserDto } from '../users/dto/user.dto';
 import { TokenResponseDto } from '../common/dto/response.dto';
 import * as bcrypt from 'bcrypt';
@@ -14,6 +15,7 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private mailerService: MailerService,
   ) {}
 
   async validateUser(email: string, password: string): Promise<UserDto> {
@@ -23,6 +25,18 @@ export class AuthService {
     }
 
     if (!existentUser.isVerified) {
+      const { accessToken } = await this.generateJWT(existentUser);
+      const mail = {
+        to: existentUser.email,
+        from: 'noreply@bizudesign.com',
+        subject: 'bizu design - Verifique seu e-mail!',
+        template: 'email-confirmation',
+        context: {
+          accessToken,
+        },
+      };
+
+      await this.mailerService.sendMail(mail);
       throw new UnauthorizedException('Usuário cadastrado mas não verificado.');
     }
 
