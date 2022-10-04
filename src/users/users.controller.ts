@@ -95,7 +95,7 @@ export class UsersController {
       expires: new Date(today.setDate(today.getDate() + 1)), // Expira em 1 dia
       secure: true,
       httpOnly: true,
-      sameSite: 'none',
+      sameSite: 'lax',
     });
 
     await this.usersService.updateLastSignIn(accessToken); // Atualiza a coluna lastSignIn.
