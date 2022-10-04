@@ -20,6 +20,7 @@ services:
       - DB_PORT=3306
       - JWT_SECRET=sEgReDiNhO
       - MAIL_TRANSPORT=smtps://zedubizu@gmail.com:wqrlqothdyvnkjsg@smtp.gmail.com
+      - BASE_URL_FRONT=http://localhost:3000
     healthcheck:
       test: ["CMD", "lsof", "-t", "-i:3001"]
       timeout: 10s
