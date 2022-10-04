@@ -92,7 +92,6 @@ export class UsersController {
     // Salvando o token do usuário em um cookie httpOnly.
     res.cookie('accessToken', accessToken, {
       expires: new Date(today.setDate(today.getDate() + 1)), // Expira em 1 dia
-      sameSite: 'strict',
       httpOnly: true,
     });
 
