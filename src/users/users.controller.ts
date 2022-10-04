@@ -90,9 +90,12 @@ export class UsersController {
     const today = new Date(initial);
 
     // Salvando o token do usuário em um cookie httpOnly.
+    // REF: https://geekflare.com/enable-cors-httponly-cookie-secure-token/
     res.cookie('accessToken', accessToken, {
       expires: new Date(today.setDate(today.getDate() + 1)), // Expira em 1 dia
+      secure: true,
       httpOnly: true,
+      sameSite: 'none',
     });
 
     await this.usersService.updateLastSignIn(accessToken); // Atualiza a coluna lastSignIn.
